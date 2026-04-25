@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../features/auth/presentation/pages/change_password_page.dart';
 import '../../features/auth/presentation/pages/create_account_page.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_food_page.dart';
 import '../../features/auth/presentation/pages/register_goals_page.dart';
@@ -23,6 +25,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const WelcomePage());
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
+      case AppRoutes.forgotPassword:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
       case AppRoutes.registerPersonal:
         return MaterialPageRoute(builder: (_) => const RegisterPersonalPage());
       case AppRoutes.registerFood:
@@ -35,6 +39,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const CreateAccountPage());
       case AppRoutes.mainShell:
         return MaterialPageRoute(builder: (_) => const MainShellPage());
+      case AppRoutes.changePassword:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordPage());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
@@ -44,3 +50,4 @@ class RouteGenerator {
     }
   }
 }
+

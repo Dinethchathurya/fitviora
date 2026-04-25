@@ -41,5 +41,38 @@ class AuthRemoteDataSourceImpl {
     await _auth.signOut();
   }
 
+  Future<void> reauthenticateUser({required String currentPassword}) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+
+    final email = user.email;
+    if (email == null) {
+      throw Exception('User email is not available');
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
+    );
+
+    await user.reauthenticateWithCredential(credential);
+  }
+
+  Future<void> updatePassword({required String newPassword}) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+
+    await user.updatePassword(newPassword);
+  }
+
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }
+

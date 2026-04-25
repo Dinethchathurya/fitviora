@@ -1,5 +1,3 @@
-import '../../../../shared/entities/user_profile.dart';
-
 abstract class AuthRepository {
   Future<void> login({
     required String email,
@@ -14,5 +12,12 @@ abstract class AuthRepository {
 
   Future<void> logout();
 
+  Future<void> reauthenticateUser({required String currentPassword});
+
+  Future<void> updatePassword({required String newPassword});
+
+  Future<void> sendPasswordResetEmail({required String email});
+
   String? get currentUserId;
 }
+

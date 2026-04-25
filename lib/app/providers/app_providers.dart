@@ -6,7 +6,11 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/usecases/create_account_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';
+import '../../features/auth/domain/usecases/reauthenticate_user_usecase.dart';
+import '../../features/auth/domain/usecases/send_password_reset_email_usecase.dart';
+import '../../features/auth/domain/usecases/update_password_usecase.dart';
 import '../../features/auth/presentation/viewmodels/auth_view_model.dart';
+import '../../features/auth/presentation/viewmodels/password_view_model.dart';
 import '../../features/auth/presentation/viewmodels/register_flow_view_model.dart';
 import '../../features/onboarding/presentation/viewmodels/onboarding_view_model.dart';
 import '../../features/profile/data/datasources/profile_remote_data_source_impl.dart';
@@ -52,6 +56,21 @@ class AppProviders {
         context.read<AuthRepositoryImpl>(),
       ),
     ),
+    Provider<ReauthenticateUserUseCase>(
+      create: (context) => ReauthenticateUserUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
+    Provider<UpdatePasswordUseCase>(
+      create: (context) => UpdatePasswordUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
+    Provider<SendPasswordResetEmailUseCase>(
+      create: (context) => SendPasswordResetEmailUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
     Provider<GetProfileUseCase>(
       create: (context) => GetProfileUseCase(
         context.read<ProfileRepositoryImpl>(),
@@ -76,6 +95,13 @@ class AppProviders {
       ),
     ),
     ChangeNotifierProvider(
+      create: (context) => PasswordViewModel(
+        reauthenticateUserUseCase: context.read<ReauthenticateUserUseCase>(),
+        updatePasswordUseCase: context.read<UpdatePasswordUseCase>(),
+        sendPasswordResetEmailUseCase: context.read<SendPasswordResetEmailUseCase>(),
+      ),
+    ),
+    ChangeNotifierProvider(
       create: (_) => RegisterFlowViewModel(),
     ),
     ChangeNotifierProvider(
@@ -89,3 +115,4 @@ class AppProviders {
     ),
   ];
 }
+

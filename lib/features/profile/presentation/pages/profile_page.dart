@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app/routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/viewmodels/auth_view_model.dart';
 import '../viewmodels/profile_view_model.dart';
@@ -67,10 +68,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 28),
-            const ListTile(
-              leading: Icon(Icons.privacy_tip_outlined),
-              title: Text('Privacy & Security'),
-              trailing: Icon(Icons.chevron_right),
+            ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              title: const Text('Privacy & Security'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.changePassword,
+                );
+              },
             ),
             const ListTile(
               leading: Icon(Icons.description_outlined),
