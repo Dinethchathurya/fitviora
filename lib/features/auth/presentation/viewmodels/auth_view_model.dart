@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/routes/app_routes.dart';
+import '../../domain/usecases/check_email_verified_usecase.dart';
 import '../../domain/usecases/create_account_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/send_email_verification_usecase.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final LoginUseCase loginUseCase;
   final CreateAccountUseCase createAccountUseCase;
   final LogoutUseCase logoutUseCase;
+  final SendEmailVerificationUseCase sendEmailVerificationUseCase;
+  final CheckEmailVerifiedUseCase checkEmailVerifiedUseCase;
 
   AuthViewModel({
     required this.loginUseCase,
     required this.createAccountUseCase,
     required this.logoutUseCase,
+    required this.sendEmailVerificationUseCase,
+    required this.checkEmailVerifiedUseCase,
   });
 
   bool isLoading = false;
@@ -25,7 +31,8 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login({
+  /// Returns: 'verified' | 'unverified' | null (error)
+  Future<String?> login({
     required String email,
     required String password,
   }) async {
@@ -37,16 +44,20 @@ class AuthViewModel extends ChangeNotifier {
         email: email,
         password: password,
       );
-      return true;
+
+      // Check if email is verified after login
+      final verified = checkEmailVerifiedUseCase();
+      return verified ? 'verified' : 'unverified';
     } catch (e) {
       errorMessage = _friendlyError(e);
-      return false;
+      return null;
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
+  /// Returns: true if account created successfully (includes sending verification email)
   Future<bool> createAccount({
     required String email,
     required String password,
@@ -61,6 +72,12 @@ class AuthViewModel extends ChangeNotifier {
         password: password,
         profileData: profileData,
       );
+
+      if (uid != null) {
+        // Send email verification immediately after account creation
+        await sendEmailVerificationUseCase();
+      }
+
       return uid != null;
     } catch (e) {
       errorMessage = _friendlyError(e);

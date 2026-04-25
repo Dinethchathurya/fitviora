@@ -62,15 +62,60 @@ class _RegisterPersonalPageState extends State<RegisterPersonalPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        AppTextField(
-                          label: 'Date of Birth',
-                          controller: vm.dateOfBirthController,
-                          hintText: 'yyyy-mm-dd',
-                          validator: (value) =>
-                              Validators.requiredField(
-                            value,
-                            'Date of birth',
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Date of Birth',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: vm.dateOfBirthController,
+                              readOnly: true,
+                              onTap: () async {
+                                final now = DateTime.now();
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime(now.year - 20),
+                                  firstDate: DateTime(1900),
+                                  lastDate: now,
+                                  builder: (context, child) {
+                                    return Theme(
+                                      data: Theme.of(context).copyWith(
+                                        colorScheme: const ColorScheme.light(
+                                          primary: Color(0xFF059669),
+                                          onPrimary: Color(0xFFFFFFFF),
+                                          surface: Color(0xFFFFFFFF),
+                                          onSurface: Color(0xFF111827),
+                                        ),
+                                      ),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+                                if (picked != null) {
+                                  vm.dateOfBirthController.text =
+                                      '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Tap to pick date',
+                                prefixIcon: Icon(
+                                  Icons.calendar_today_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                              validator: (value) =>
+                                  Validators.requiredField(
+                                value,
+                                'Date of birth',
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
                         const Text(

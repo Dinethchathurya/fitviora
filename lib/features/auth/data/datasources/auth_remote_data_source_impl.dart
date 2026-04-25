@@ -73,6 +73,28 @@ class AuthRemoteDataSourceImpl {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
+  Future<void> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+    await user.sendEmailVerification();
+  }
+
+  Future<void> reloadUser() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+    await user.reload();
+  }
+
+  bool get isEmailVerified {
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
+  String? get currentUserEmail => _auth.currentUser?.email;
+
   String? get currentUserId => _auth.currentUser?.uid;
 }
 

@@ -21,8 +21,7 @@ class CreateAccountPage extends StatefulWidget {
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController =
-      TextEditingController(text: 'your.email@example.com');
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController =
       TextEditingController();
 
@@ -49,10 +48,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
     if (!mounted) return;
 
-    if (success) {
+if (success) {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        AppRoutes.mainShell,
+        AppRoutes.verifyEmail,
         (route) => false,
       );
     }
@@ -111,8 +110,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           label: 'Password',
                           controller: _passwordController,
                           obscureText: !_passwordVisible,
-                          hintText: 'Minimum 8 characters',
-                          validator: Validators.password,
+                          hintText: 'Min 8 chars, uppercase, lowercase, number & special char',
+                          validator: Validators.strongPassword,
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             onPressed: () {

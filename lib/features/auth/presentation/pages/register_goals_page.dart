@@ -49,7 +49,7 @@ class RegisterGoalsPage extends StatelessWidget {
                         "What's your primary goal?",
                         style: TextStyle(fontSize: 14),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       ...goals.map(
                         (goal) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),

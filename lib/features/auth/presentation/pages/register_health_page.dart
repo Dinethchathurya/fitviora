@@ -46,7 +46,7 @@ class RegisterHealthPage extends StatelessWidget {
                         'Select all that apply',
                         style: TextStyle(fontSize: 14),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       ...conditions.map(
                         (condition) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),

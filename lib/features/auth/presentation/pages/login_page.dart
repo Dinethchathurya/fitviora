@@ -20,10 +20,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController =
-      TextEditingController(text: 'your.email@example.com');
-  final TextEditingController _passwordController =
-      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -35,17 +33,23 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submit(AuthViewModel authViewModel) async {
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await authViewModel.login(
+    final result = await authViewModel.login(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     );
 
     if (!mounted) return;
 
-    if (success) {
+    if (result == 'verified') {
       Navigator.pushNamedAndRemoveUntil(
         context,
         AppRoutes.mainShell,
+        (route) => false,
+      );
+    } else if (result == 'unverified') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.verifyEmail,
         (route) => false,
       );
     }
@@ -101,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                             size: 20,
                           ),
                         ),
-                        validator: Validators.password,
+                        validator: Validators.strongPassword,
                       ),
                       const SizedBox(height: 10),
                       Align(

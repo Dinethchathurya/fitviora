@@ -50,7 +50,7 @@ class RegisterFoodPage extends StatelessWidget {
                         'Select your dietary preference',
                         style: TextStyle(fontSize: 14),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       ...items.map(
                         (item) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),

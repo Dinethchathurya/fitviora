@@ -3,13 +3,17 @@ import 'package:provider/provider.dart';
 import '../../core/services/local_storage_service.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/usecases/check_email_verified_usecase.dart';
 import '../../features/auth/domain/usecases/create_account_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';
 import '../../features/auth/domain/usecases/reauthenticate_user_usecase.dart';
+import '../../features/auth/domain/usecases/reload_user_usecase.dart';
+import '../../features/auth/domain/usecases/send_email_verification_usecase.dart';
 import '../../features/auth/domain/usecases/send_password_reset_email_usecase.dart';
 import '../../features/auth/domain/usecases/update_password_usecase.dart';
 import '../../features/auth/presentation/viewmodels/auth_view_model.dart';
+import '../../features/auth/presentation/viewmodels/email_verification_view_model.dart';
 import '../../features/auth/presentation/viewmodels/password_view_model.dart';
 import '../../features/auth/presentation/viewmodels/register_flow_view_model.dart';
 import '../../features/onboarding/presentation/viewmodels/onboarding_view_model.dart';
@@ -71,6 +75,21 @@ class AppProviders {
         context.read<AuthRepositoryImpl>(),
       ),
     ),
+    Provider<SendEmailVerificationUseCase>(
+      create: (context) => SendEmailVerificationUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
+    Provider<ReloadUserUseCase>(
+      create: (context) => ReloadUserUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
+    Provider<CheckEmailVerifiedUseCase>(
+      create: (context) => CheckEmailVerifiedUseCase(
+        context.read<AuthRepositoryImpl>(),
+      ),
+    ),
     Provider<GetProfileUseCase>(
       create: (context) => GetProfileUseCase(
         context.read<ProfileRepositoryImpl>(),
@@ -92,6 +111,8 @@ class AppProviders {
         loginUseCase: context.read<LoginUseCase>(),
         createAccountUseCase: context.read<CreateAccountUseCase>(),
         logoutUseCase: context.read<LogoutUseCase>(),
+        sendEmailVerificationUseCase: context.read<SendEmailVerificationUseCase>(),
+        checkEmailVerifiedUseCase: context.read<CheckEmailVerifiedUseCase>(),
       ),
     ),
     ChangeNotifierProvider(
@@ -99,6 +120,14 @@ class AppProviders {
         reauthenticateUserUseCase: context.read<ReauthenticateUserUseCase>(),
         updatePasswordUseCase: context.read<UpdatePasswordUseCase>(),
         sendPasswordResetEmailUseCase: context.read<SendPasswordResetEmailUseCase>(),
+      ),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => EmailVerificationViewModel(
+        sendEmailVerificationUseCase: context.read<SendEmailVerificationUseCase>(),
+        reloadUserUseCase: context.read<ReloadUserUseCase>(),
+        checkEmailVerifiedUseCase: context.read<CheckEmailVerifiedUseCase>(),
+        logoutUseCase: context.read<LogoutUseCase>(),
       ),
     ),
     ChangeNotifierProvider(
@@ -115,4 +144,3 @@ class AppProviders {
     ),
   ];
 }
-

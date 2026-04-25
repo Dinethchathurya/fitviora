@@ -11,5 +11,5 @@ class AppRoutes {
   static const createAccount = '/register/create-account';
   static const mainShell = '/app';
   static const changePassword = '/change-password';
+  static const verifyEmail = '/verify-email';
 }
-

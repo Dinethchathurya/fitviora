@@ -22,6 +22,11 @@ class SplashViewModel extends ChangeNotifier {
 
     if (!onboarded) return AppRoutes.onboarding;
     if (!loggedIn) return AppRoutes.welcome;
+
+    // Check if email is verified
+    final isVerified = authRepository.isEmailVerified;
+    if (!isVerified) return AppRoutes.verifyEmail;
+
     return AppRoutes.mainShell;
   }
 }

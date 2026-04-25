@@ -18,6 +18,13 @@ abstract class AuthRepository {
 
   Future<void> sendPasswordResetEmail({required String email});
 
+  Future<void> sendEmailVerification();
+
+  Future<void> reloadUser();
+
+  bool get isEmailVerified;
+
+  String? get currentUserEmail;
+
   String? get currentUserId;
 }
-

@@ -8,6 +8,7 @@ import '../../features/auth/presentation/pages/register_food_page.dart';
 import '../../features/auth/presentation/pages/register_goals_page.dart';
 import '../../features/auth/presentation/pages/register_health_page.dart';
 import '../../features/auth/presentation/pages/register_personal_page.dart';
+import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/auth/presentation/pages/welcome_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
@@ -41,6 +42,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const MainShellPage());
       case AppRoutes.changePassword:
         return MaterialPageRoute(builder: (_) => const ChangePasswordPage());
+      case AppRoutes.verifyEmail:
+        return MaterialPageRoute(builder: (_) => const VerifyEmailPage());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
@@ -50,4 +53,3 @@ class RouteGenerator {
     }
   }
 }
-
