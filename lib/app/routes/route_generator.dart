@@ -11,6 +11,7 @@ import '../../features/auth/presentation/pages/register_personal_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/auth/presentation/pages/welcome_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/profile/presentation/pages/privacy_policy_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../main_shell/presentation/pages/main_shell_page.dart';
 import 'app_routes.dart';
@@ -44,6 +45,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ChangePasswordPage());
       case AppRoutes.verifyEmail:
         return MaterialPageRoute(builder: (_) => const VerifyEmailPage());
+      case AppRoutes.privacyPolicy:
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyPage());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

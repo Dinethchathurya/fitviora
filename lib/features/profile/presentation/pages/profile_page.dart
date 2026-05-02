@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -74,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 14),
               _ActionGroupCard(authVm: authVm),
               const SizedBox(height: 20),
-const Center(
+              const Center(
                 child: Text(
                   'FitViora v1.0.0',
                   style: TextStyle(
@@ -377,7 +376,7 @@ class _ActionGroupCard extends StatelessWidget {
         children: [
           _ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.changePassword)),
           const Divider(height: 1),
-          _ActionTile('Privacy Policy', () {}),
+          _ActionTile('Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.privacyPolicy)),
           const Divider(height: 1),
           _ActionTile('Terms of Service', () {}),
           const Divider(height: 2),
@@ -405,7 +404,7 @@ class _ActionTile extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-trailing: Icon(
+      trailing: Icon(
         Icons.chevron_right,
         color: danger ? AppColors.destructive : AppColors.gray500,
       ),
