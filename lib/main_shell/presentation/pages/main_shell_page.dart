@@ -17,17 +17,14 @@ class MainShellPage extends StatelessWidget {
 
     const pages = [
       HomePage(),
+      MealPlanPage(),
       ProgressPage(),
       ReportsPage(),
-      MealPlanPage(),
       ProfilePage(),
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: vm.currentIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: vm.currentIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: vm.currentIndex,
         onDestinationSelected: vm.changeIndex,
@@ -38,6 +35,11 @@ class MainShellPage extends StatelessWidget {
             label: 'Home',
           ),
           NavigationDestination(
+            icon: Icon(Icons.restaurant_menu_outlined),
+            selectedIcon: Icon(Icons.restaurant_menu),
+            label: 'Meals',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.show_chart_outlined),
             selectedIcon: Icon(Icons.show_chart),
             label: 'Progress',
@@ -46,11 +48,6 @@ class MainShellPage extends StatelessWidget {
             icon: Icon(Icons.bar_chart_outlined),
             selectedIcon: Icon(Icons.bar_chart),
             label: 'Reports',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.restaurant_menu_outlined),
-            selectedIcon: Icon(Icons.restaurant_menu),
-            label: 'Meal Plan',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
