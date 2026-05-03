@@ -22,6 +22,112 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _showLogoutDialog(AuthViewModel authVm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.red400.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: AppColors.destructive,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Log Out?',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: const Text(
+                    'Are you sure you want to sign out of your FitViora account?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.gray600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.gray700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          authVm.logout(context);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColors.destructive,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Log Out',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProfileViewModel>();
@@ -72,7 +178,10 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 14),
               _DietaryPreferenceCard(vm: vm),
               const SizedBox(height: 14),
-              _ActionGroupCard(authVm: authVm),
+              _ActionGroupCard(
+                authVm: authVm,
+                onLogoutTap: () => _showLogoutDialog(authVm),
+              ),
               const SizedBox(height: 20),
               const Center(
                 child: Text(
@@ -455,10 +564,14 @@ class _DietaryPreferenceCard extends StatelessWidget {
     );
   }
 }
-
 class _ActionGroupCard extends StatelessWidget {
   final AuthViewModel authVm;
-  const _ActionGroupCard({required this.authVm});
+  final VoidCallback onLogoutTap;
+
+  const _ActionGroupCard({
+    required this.authVm,
+    required this.onLogoutTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -470,14 +583,13 @@ class _ActionGroupCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-_ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.privacySecurity)),
+          _ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.privacySecurity)),
           const Divider(height: 1),
           _ActionTile('Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.privacyPolicy)),
           const Divider(height: 1),
-_ActionTile('Terms of Service', () => Navigator.pushNamed(context, '/terms-of-service')),
+          _ActionTile('Terms of Service', () => Navigator.pushNamed(context, '/terms-of-service')),
           const Divider(height: 2),
-          _ActionTile('Log Out', () => authVm.logout(context), danger: true),
-        ],
+          _ActionTile('Log Out', onLogoutTap, danger: true),        ],
       ),
     );
   }
