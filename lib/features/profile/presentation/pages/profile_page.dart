@@ -51,25 +51,26 @@ class _ProfilePageState extends State<ProfilePage> {
               _DetailsCard(
                 title: 'Personal Information',
                 showEdit: true,
-                rows: [
-                  _RowData(Icons.email_outlined, 'Email', vm.displayEmail),
-                  _RowData(Icons.phone_outlined, 'Phone', '+94 77 123 4567'),
-                  _RowData(Icons.calendar_today_outlined, 'Date of Birth', vm.displayDob),
-                  _RowData(Icons.person_outline, 'Gender', vm.displayGender),
+                content: [
+                  _SingleRow(data: _RowData(Icons.email_outlined, 'Email', vm.displayEmail)),
+                  _SingleRow(data: _RowData(Icons.phone_outlined, 'Phone', '+94 77 123 4567')),
+                  _SingleRow(data: _RowData(Icons.calendar_today_outlined, 'Date of Birth', vm.displayDob)),
+                  _SingleRow(data: _RowData(Icons.person_outline, 'Gender', vm.displayGender)),
                 ],
               ),
               const SizedBox(height: 14),
               _DetailsCard(
                 title: 'Health Information',
-                rows: [
-                  _RowData(Icons.height, 'Height', vm.displayHeight),
-                  _RowData(Icons.monitor_weight_outlined, 'Weight', vm.displayWeight),
-                  _RowData(Icons.favorite_outline, 'Activity Level', vm.displayActivityLevel),
-                  _RowData(Icons.track_changes_outlined, 'Goal', vm.displayGoal),
+                content: [
+                  _SingleRow(data: _RowData(Icons.height, 'Height', vm.displayHeight)),
+                  _SingleRow(data: _RowData(Icons.monitor_weight_outlined, 'Weight', vm.displayWeight)),
+                  _SingleRow(data: _RowData(Icons.favorite_outline, 'Activity Level', vm.displayActivityLevel)),
+                  // _GoalRow(vm: vm),
+                  // _HealthBadgesRow(vm: vm),
                 ],
               ),
               const SizedBox(height: 14),
-              _DietaryPreferenceCard(preference: vm.displayFoodPreference),
+              _DietaryPreferenceCard(vm: vm),
               const SizedBox(height: 14),
               _ActionGroupCard(authVm: authVm),
               const SizedBox(height: 20),
@@ -223,11 +224,11 @@ class _ProfileHeroCard extends StatelessWidget {
 class _DetailsCard extends StatelessWidget {
   final String title;
   final bool showEdit;
-  final List<_RowData> rows;
+  final List<Widget> content;
 
   const _DetailsCard({
     required this.title,
-    required this.rows,
+    required this.content,
     this.showEdit = false,
   });
 
@@ -260,11 +261,15 @@ class _DetailsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          for (int i = 0; i < rows.length; i++) ...[
-            _SingleRow(data: rows[i]),
-            if (i != rows.length - 1)
-              const Divider(height: 18, color: AppColors.gray200),
-          ]
+          ...List.generate(content.length, (index) {
+            return Column(
+              children: [
+                content[index],
+                if (index < content.length - 1)
+                  const Divider(height: 18, color: AppColors.gray200),
+              ],
+            );
+          }),
         ],
       ),
     );
@@ -276,6 +281,97 @@ class _RowData {
   final String label;
   final String value;
   _RowData(this.icon, this.label, this.value);
+}
+
+class _GoalRow extends StatelessWidget {
+  final ProfileViewModel vm;
+  const _GoalRow({required this.vm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.emerald50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Text(
+            vm.goalEmoji,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Goal',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.gray600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            vm.displayGoal,
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColors.emerald500,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HealthBadgesRow extends StatelessWidget {
+  final ProfileViewModel vm;
+  const _HealthBadgesRow({required this.vm});
+
+  @override
+  Widget build(BuildContext context) {
+    final badges = vm.healthConditionBadges;
+    if (badges.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Health Conditions',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.gray600,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: badges.map((badge) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.emerald100,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.gray200),
+              ),
+              child: Text(
+                badge,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.emerald500,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SingleRow extends StatelessWidget {
@@ -315,8 +411,8 @@ class _SingleRow extends StatelessWidget {
 }
 
 class _DietaryPreferenceCard extends StatelessWidget {
-  final String preference;
-  const _DietaryPreferenceCard({required this.preference});
+  final ProfileViewModel vm;
+  const _DietaryPreferenceCard({required this.vm});
 
   @override
   Widget build(BuildContext context) {
@@ -345,10 +441,10 @@ class _DietaryPreferenceCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Text('🥗', style: TextStyle(fontSize: 20)),
+                Text(vm.foodPreferenceEmoji, style: const TextStyle(fontSize: 20)),
                 const SizedBox(width: 10),
                 Text(
-                  preference,
+                  vm.displayFoodPreference,
                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ],

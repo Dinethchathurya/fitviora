@@ -58,6 +58,37 @@ class ProfileViewModel extends ChangeNotifier {
 
   String get displayFoodPreference => _capitalize(profile?.foodPreference);
 
+  // ── Visual mapping getters ──
+  String get foodPreferenceEmoji {
+    final pref = profile?.foodPreference ?? '';
+    final map = {
+      'Vegetarian': '🥗',
+      'Non-Vegetarian': '🍗',
+      'Vegan': '🌱',
+      'Pescatarian': '🐟',
+    };
+    return map[pref] ?? '🍽️';
+  }
+
+  String get goalEmoji {
+    final goal = profile?.goal ?? '';
+    final map = {
+      'Weight Loss': '📉',
+      'Weight Gain': '💪',
+      'Maintenance': '⚖️',
+    };
+    return map[goal] ?? '🎯';
+  }
+
+  List<String> get healthConditionBadges {
+    final conditions = profile?.healthConditions as List<String>? ?? [];
+    final map = {
+      'Diabetes': '🩸 Diabetes',
+      'Hypertension': '❤️ Hypertension',
+    };
+    return conditions.map((c) => map[c] ?? c).where((b) => b.isNotEmpty).toList();
+  }
+
   // ── BMI getters ──
 
   double get bmi {
