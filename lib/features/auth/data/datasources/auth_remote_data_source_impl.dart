@@ -96,5 +96,30 @@ class AuthRemoteDataSourceImpl {
   String? get currentUserEmail => _auth.currentUser?.email;
 
   String? get currentUserId => _auth.currentUser?.uid;
+
+  Future<void> deleteUserAccount({required String currentPassword}) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+
+    final email = user.email;
+    if (email == null) {
+      throw Exception('User email is not available');
+    }
+
+    // Reauthenticate
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
+    );
+    await user.reauthenticateWithCredential(credential);
+
+    // Delete Firestore document
+    await _firestore.collection('users').doc(user.uid).delete();
+
+    // Delete Firebase Auth user
+    await user.delete();
+  }
 }
 

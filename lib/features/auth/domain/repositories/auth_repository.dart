@@ -27,4 +27,6 @@ abstract class AuthRepository {
   String? get currentUserEmail;
 
   String? get currentUserId;
+
+  Future<void> deleteUserAccount({required String currentPassword});
 }

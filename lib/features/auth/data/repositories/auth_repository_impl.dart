@@ -76,4 +76,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   String? get currentUserId => remoteDataSource.currentUserId;
+
+  @override
+  Future<void> deleteUserAccount({required String currentPassword}) {
+    return remoteDataSource.deleteUserAccount(
+      currentPassword: currentPassword,
+    );
+  }
 }
