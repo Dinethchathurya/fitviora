@@ -378,7 +378,7 @@ class _ActionGroupCard extends StatelessWidget {
           const Divider(height: 1),
           _ActionTile('Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.privacyPolicy)),
           const Divider(height: 1),
-          _ActionTile('Terms of Service', () {}),
+_ActionTile('Terms of Service', () => Navigator.pushNamed(context, '/terms-of-service')),
           const Divider(height: 2),
           _ActionTile('Log Out', () => authVm.logout(context), danger: true),
         ],

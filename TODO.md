@@ -1,14 +1,9 @@
-# TODO - Privacy Policy Page Implementation
+# TODO - Terms of Service Page Implementation
 
-## Steps to Complete:
-- [x] 1. Read app_routes.dart to understand existing routes
-- [x] 2. Read route_generator.dart to understand route mapping
-- [x] 3. Add privacyPolicy route constant in app_routes.dart
-- [x] 4. Create privacy_policy_page.dart with full implementation
-- [x] 5. Update route_generator.dart to include new route
-- [x] 6. Update profile_page.dart Privacy Policy tile to navigate to new page
-- [x] 7. Test the build
+## Plan
+- [ ] Create terms_of_service_page.dart
+- [ ] Update app_routes.dart - add termsOfService constant
+- [ ] Update route_generator.dart - add route mapping
+- [ ] Update profile_page.dart - connect Terms of Service tile
 
-## COMPLETED ✅
-
-All Privacy Policy page implementation is complete and build verified successfully.
+## Status: IN PROGRESS
