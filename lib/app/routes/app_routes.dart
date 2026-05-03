@@ -14,4 +14,5 @@ class AppRoutes {
 static const verifyEmail = '/verify-email';
   static const privacyPolicy = '/privacy-policy';
   static const termsOfService = '/terms-of-service';
+  static const privacySecurity = '/privacy-security';
 }

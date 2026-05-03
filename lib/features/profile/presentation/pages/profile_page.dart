@@ -374,7 +374,7 @@ class _ActionGroupCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.changePassword)),
+_ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.privacySecurity)),
           const Divider(height: 1),
           _ActionTile('Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.privacyPolicy)),
           const Divider(height: 1),

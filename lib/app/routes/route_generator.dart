@@ -13,6 +13,7 @@ import '../../features/auth/presentation/pages/welcome_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/profile/presentation/pages/privacy_policy_page.dart';
 import '../../features/profile/presentation/pages/terms_of_service_page.dart';
+import '../../features/profile/presentation/pages/privacy_security_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../main_shell/presentation/pages/main_shell_page.dart';
 import 'app_routes.dart';
@@ -50,6 +51,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyPage());
       case AppRoutes.termsOfService:
         return MaterialPageRoute(builder: (_) => const TermsOfServicePage());
+      case AppRoutes.privacySecurity:
+        return MaterialPageRoute(builder: (_) => const PrivacySecurityPage());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
