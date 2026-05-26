@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +20,112 @@ class _ProfilePageState extends State<ProfilePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProfileViewModel>().loadProfile();
     });
+  }
+
+  void _showLogoutDialog(AuthViewModel authVm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.red400.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: AppColors.destructive,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Log Out?',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: const Text(
+                    'Are you sure you want to sign out of your FitViora account?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.gray600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.gray700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          authVm.logout(context);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColors.destructive,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Log Out',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -52,29 +157,33 @@ class _ProfilePageState extends State<ProfilePage> {
               _DetailsCard(
                 title: 'Personal Information',
                 showEdit: true,
-                rows: [
-                  _RowData(Icons.email_outlined, 'Email', vm.displayEmail),
-                  _RowData(Icons.phone_outlined, 'Phone', '+94 77 123 4567'),
-                  _RowData(Icons.calendar_today_outlined, 'Date of Birth', vm.displayDob),
-                  _RowData(Icons.person_outline, 'Gender', vm.displayGender),
+                content: [
+                  _SingleRow(data: _RowData(Icons.email_outlined, 'Email', vm.displayEmail)),
+                  _SingleRow(data: _RowData(Icons.phone_outlined, 'Phone', '+94 77 123 4567')),
+                  _SingleRow(data: _RowData(Icons.calendar_today_outlined, 'Date of Birth', vm.displayDob)),
+                  _SingleRow(data: _RowData(Icons.person_outline, 'Gender', vm.displayGender)),
                 ],
               ),
               const SizedBox(height: 14),
               _DetailsCard(
                 title: 'Health Information',
-                rows: [
-                  _RowData(Icons.height, 'Height', vm.displayHeight),
-                  _RowData(Icons.monitor_weight_outlined, 'Weight', vm.displayWeight),
-                  _RowData(Icons.favorite_outline, 'Activity Level', vm.displayActivityLevel),
-                  _RowData(Icons.track_changes_outlined, 'Goal', vm.displayGoal),
+                content: [
+                  _SingleRow(data: _RowData(Icons.height, 'Height', vm.displayHeight)),
+                  _SingleRow(data: _RowData(Icons.monitor_weight_outlined, 'Weight', vm.displayWeight)),
+                  _SingleRow(data: _RowData(Icons.favorite_outline, 'Activity Level', vm.displayActivityLevel)),
+                  // _GoalRow(vm: vm),
+                  // _HealthBadgesRow(vm: vm),
                 ],
               ),
               const SizedBox(height: 14),
-              _DietaryPreferenceCard(preference: vm.displayFoodPreference),
+              _DietaryPreferenceCard(vm: vm),
               const SizedBox(height: 14),
-              _ActionGroupCard(authVm: authVm),
+              _ActionGroupCard(
+                authVm: authVm,
+                onLogoutTap: () => _showLogoutDialog(authVm),
+              ),
               const SizedBox(height: 20),
-const Center(
+              const Center(
                 child: Text(
                   'FitViora v1.0.0',
                   style: TextStyle(
@@ -224,11 +333,11 @@ class _ProfileHeroCard extends StatelessWidget {
 class _DetailsCard extends StatelessWidget {
   final String title;
   final bool showEdit;
-  final List<_RowData> rows;
+  final List<Widget> content;
 
   const _DetailsCard({
     required this.title,
-    required this.rows,
+    required this.content,
     this.showEdit = false,
   });
 
@@ -261,11 +370,15 @@ class _DetailsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          for (int i = 0; i < rows.length; i++) ...[
-            _SingleRow(data: rows[i]),
-            if (i != rows.length - 1)
-              const Divider(height: 18, color: AppColors.gray200),
-          ]
+          ...List.generate(content.length, (index) {
+            return Column(
+              children: [
+                content[index],
+                if (index < content.length - 1)
+                  const Divider(height: 18, color: AppColors.gray200),
+              ],
+            );
+          }),
         ],
       ),
     );
@@ -277,6 +390,97 @@ class _RowData {
   final String label;
   final String value;
   _RowData(this.icon, this.label, this.value);
+}
+
+class _GoalRow extends StatelessWidget {
+  final ProfileViewModel vm;
+  const _GoalRow({required this.vm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.emerald50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Text(
+            vm.goalEmoji,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Goal',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.gray600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            vm.displayGoal,
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColors.emerald500,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HealthBadgesRow extends StatelessWidget {
+  final ProfileViewModel vm;
+  const _HealthBadgesRow({required this.vm});
+
+  @override
+  Widget build(BuildContext context) {
+    final badges = vm.healthConditionBadges;
+    if (badges.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Health Conditions',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.gray600,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: badges.map((badge) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.emerald100,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.gray200),
+              ),
+              child: Text(
+                badge,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.emerald500,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SingleRow extends StatelessWidget {
@@ -316,8 +520,8 @@ class _SingleRow extends StatelessWidget {
 }
 
 class _DietaryPreferenceCard extends StatelessWidget {
-  final String preference;
-  const _DietaryPreferenceCard({required this.preference});
+  final ProfileViewModel vm;
+  const _DietaryPreferenceCard({required this.vm});
 
   @override
   Widget build(BuildContext context) {
@@ -346,10 +550,10 @@ class _DietaryPreferenceCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Text('🥗', style: TextStyle(fontSize: 20)),
+                Text(vm.foodPreferenceEmoji, style: const TextStyle(fontSize: 20)),
                 const SizedBox(width: 10),
                 Text(
-                  preference,
+                  vm.displayFoodPreference,
                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ],
@@ -360,10 +564,14 @@ class _DietaryPreferenceCard extends StatelessWidget {
     );
   }
 }
-
 class _ActionGroupCard extends StatelessWidget {
   final AuthViewModel authVm;
-  const _ActionGroupCard({required this.authVm});
+  final VoidCallback onLogoutTap;
+
+  const _ActionGroupCard({
+    required this.authVm,
+    required this.onLogoutTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -375,14 +583,13 @@ class _ActionGroupCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.changePassword)),
+          _ActionTile('Privacy & Security', () => Navigator.pushNamed(context, AppRoutes.privacySecurity)),
           const Divider(height: 1),
-          _ActionTile('Privacy Policy', () {}),
+          _ActionTile('Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.privacyPolicy)),
           const Divider(height: 1),
-          _ActionTile('Terms of Service', () {}),
+          _ActionTile('Terms of Service', () => Navigator.pushNamed(context, '/terms-of-service')),
           const Divider(height: 2),
-          _ActionTile('Log Out', () => authVm.logout(context), danger: true),
-        ],
+          _ActionTile('Log Out', onLogoutTap, danger: true),        ],
       ),
     );
   }
@@ -405,7 +612,7 @@ class _ActionTile extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-trailing: Icon(
+      trailing: Icon(
         Icons.chevron_right,
         color: danger ? AppColors.destructive : AppColors.gray500,
       ),

@@ -106,8 +106,20 @@ class AppProviders {
         localStorageService: context.read<LocalStorageService>(),
       ),
     ),
+    // ChangeNotifierProvider(
+    //   // create: (context) => AuthViewModel(
+    //   //   loginUseCase: context.read<LoginUseCase>(),
+    //   //   createAccountUseCase: context.read<CreateAccountUseCase>(),
+    //   //   logoutUseCase: context.read<LogoutUseCase>(),
+    //   //   sendEmailVerificationUseCase: context.read<SendEmailVerificationUseCase>(),
+    //   //   checkEmailVerifiedUseCase: context.read<CheckEmailVerifiedUseCase>(),
+    //   // ),
+
+    // ),
+
     ChangeNotifierProvider(
       create: (context) => AuthViewModel(
+        repository: context.read<AuthRepositoryImpl>(),
         loginUseCase: context.read<LoginUseCase>(),
         createAccountUseCase: context.read<CreateAccountUseCase>(),
         logoutUseCase: context.read<LogoutUseCase>(),
@@ -115,6 +127,8 @@ class AppProviders {
         checkEmailVerifiedUseCase: context.read<CheckEmailVerifiedUseCase>(),
       ),
     ),
+
+
     ChangeNotifierProvider(
       create: (context) => PasswordViewModel(
         reauthenticateUserUseCase: context.read<ReauthenticateUserUseCase>(),
