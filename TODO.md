@@ -1,10 +1,13 @@
-# Dynamic Profile Visual Mapping Consistency
+# TODO
 
-## Steps:
-- [x] 1. Add computed getters to profile_view_model.dart (foodPreferenceEmoji, goalEmoji, healthConditionBadges)
-- [x] 2. Update profile_page.dart: _DietaryPreferenceCard with dynamic emoji
-- [x] 3. Update Health Information: Goal row with premium goalEmoji
-- [x] 4. Add health condition badges section in Health _DetailsCard
-- [x] 5. Test UI consistency, attempt_completion
+## Progress page UI
+- [ ] Replace placeholder `lib/features/progress/presentation/pages/progress_page.dart` with body-only static UI (SafeArea + SingleChildScrollView + Padding). No Scaffold/AppBar/bottom nav.
+- [ ] Create reusable widgets under `lib/features/progress/presentation/widgets/`:
+  - [ ] `progress_stat_card.dart`
+  - [ ] `bmi_trend_card.dart`
+  - [ ] `bmi_summary_card.dart`
+  - [ ] `progress_status_card.dart`
+- [ ] Ensure styling uses `AppColors`, rounded white cards, emerald/teal theme, soft shadows, no overflow.
+- [ ] Add bottom padding (~90) to avoid bottom navigation overlap.
+- [ ] Run `flutter analyze` and `flutter run`.
 
-**Complete** 🎉
