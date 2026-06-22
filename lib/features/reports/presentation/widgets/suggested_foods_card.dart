@@ -106,22 +106,26 @@ class _FoodRow extends StatelessWidget {
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              elevation: 0,
-              backgroundColor: AppColors.blue500,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+          SizedBox(
+            width: 80,
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                elevation: 0,
+                backgroundColor: AppColors.blue500,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-            ),
-            child: const Text(
-              'Add',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
+              child: const Text(
+                'Add',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ),
