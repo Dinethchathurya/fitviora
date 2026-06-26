@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/fitviora_logo.dart';
 import '../../../../core/widgets/gradient_background.dart';
 import '../viewmodels/splash_view_model.dart';
