@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/entities/food_variant.dart';
 import '../widgets/meal_card.dart';
 import '../widgets/meal_type_tab.dart';
-
 import '../widgets/smart_portions_info_card.dart';
+import '../../data/repositories/food_repository_impl.dart';
+import '../../domain/entities/food_item.dart';
+import '../../domain/services/meal_suggestion_service.dart';
+import '../viewmodels/meal_plan_view_model.dart';
 
 class MealPlanPage extends StatefulWidget {
   const MealPlanPage({super.key});
@@ -16,108 +20,90 @@ class MealPlanPage extends StatefulWidget {
 class _MealPlanPageState extends State<MealPlanPage> {
   String selectedMealType = 'Breakfast';
 
-  final Map<String, List<MealCard>> mealSuggestions = {
-    'Breakfast': [
-      MealCard(
-        title: 'Kiribath with Lunu Miris',
-        categories: const ['Traditional', 'Vegetarian'],
-        calories: 320,
-        protein: '8g',
-        carbs: '55g',
-        fat: '7g',
-        portionSize: '1 plate',
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = MealPlanViewModel(
+      repository: const FoodRepositoryImpl(),
+      suggestionService: const MealSuggestionService(),
+    );  
+
+    _loadMeals();
+
+  }
+
+
+  late final MealPlanViewModel _viewModel;
+  
+  Future<void> _loadMeals() async {
+  await _viewModel.loadMeals(
+    mealType: selectedMealType,
+    dietaryPreference: "Any",
+    goal: "Maintenance",
+    allergies: [],
+  );
+
+  setState(() {});
+}
+
+
+
+
+  FoodVariant? _getDefaultVariant(FoodItem food) {
+    if (food.variants.isEmpty) return null;
+    return food.variants.firstWhere(
+      (variant) => variant.isDefaultVariant,
+      orElse: () => food.variants.first,
+    );
+  }
+
+  List<MealCard> _buildMealCards(List<FoodItem> suggestions) {
+    if (suggestions.isEmpty) {
+      return [
+        MealCard(
+          title: 'No suitable meals found.',
+          categories: const [],
+          calories: 0,
+          protein: '0g',
+          carbs: '0g',
+          fat: '0g',
+          portionSize: '',
+          onSelect: () {},
+        ),
+      ];
+    }
+
+    return suggestions.map((food) {
+      final variant = _getDefaultVariant(food);
+      if (variant == null) {
+        return MealCard(
+          title: food.name,
+          categories: const [],
+          calories: 0,
+          protein: '0g',
+          carbs: '0g',
+          fat: '0g',
+          portionSize: '',
+          onSelect: () {},
+        );
+      }
+
+      return MealCard(
+        title: food.name,
+        categories: variant.healthFlags,
+        calories: variant.nutrition.caloriesKcal.round(),
+        protein: '${variant.nutrition.proteinG.round()}g',
+        carbs: '${variant.nutrition.carbsG.round()}g',
+        fat: '${variant.nutrition.fatG.round()}g',
+        portionSize: variant.servingLabel,
         onSelect: () {},
-      ),
-      MealCard(
-        title: 'String Hoppers with Dhal Curry',
-        categories: const ['Vegetarian', 'High Protein'],
-        calories: 280,
-        protein: '12g',
-        carbs: '48g',
-        fat: '5g',
-        portionSize: '4 hoppers',
-        onSelect: () {},
-      ),
-      MealCard(
-        title: 'Coconut Roti with Seeni Sambol',
-        categories: const ['Traditional'],
-        calories: 350,
-        protein: '7g',
-        carbs: '42g',
-        fat: '16g',
-        portionSize: '2 rotis',
-        onSelect: () {},
-      ),
-    ],
-    'Lunch': [
-      MealCard(
-        title: 'Rice and Chicken Curry',
-        categories: const ['High Protein', 'Balanced'],
-        calories: 620,
-        protein: '38g',
-        carbs: '65g',
-        fat: '22g',
-        portionSize: '1 bowl',
-        onSelect: () {},
-      ),
-      MealCard(
-        title: 'Rice with Dhal and Mallung',
-        categories: const ['Balanced', 'Vegetarian'],
-        calories: 520,
-        protein: '22g',
-        carbs: '78g',
-        fat: '10g',
-        portionSize: '1 bowl',
-        onSelect: () {},
-      ),
-      MealCard(
-        title: 'Fish Curry with Red Rice',
-        categories: const ['High Protein', 'Balanced'],
-        calories: 590,
-        protein: '30g',
-        carbs: '62g',
-        fat: '20g',
-        portionSize: '1 plate',
-        onSelect: () {},
-      ),
-    ],
-    'Dinner': [
-      MealCard(
-        title: 'Vegetable Soup with Toast',
-        categories: const ['Vegetarian', 'Balanced'],
-        calories: 390,
-        protein: '16g',
-        carbs: '50g',
-        fat: '12g',
-        portionSize: '1 bowl',
-        onSelect: () {},
-      ),
-      MealCard(
-        title: 'Egg Hoppers',
-        categories: const ['High Protein', 'Traditional'],
-        calories: 460,
-        protein: '24g',
-        carbs: '55g',
-        fat: '18g',
-        portionSize: '2 hoppers',
-        onSelect: () {},
-      ),
-      MealCard(
-        title: 'Grilled Fish with Salad',
-        categories: const ['High Protein', 'Balanced'],
-        calories: 540,
-        protein: '35g',
-        carbs: '30g',
-        fat: '26g',
-        portionSize: '1 plate',
-        onSelect: () {},
-      ),
-    ],
-  };
+      );
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final mealCards = mealSuggestions[selectedMealType] ?? const [];
+    final mealCards = _buildMealCards(_viewModel.meals);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -178,6 +164,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
                           setState(() {
                             selectedMealType = 'Breakfast';
                           });
+                          _loadMeals();
                         },
                       ),
                     ),
@@ -193,6 +180,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
                           setState(() {
                             selectedMealType = 'Lunch';
                           });
+                          _loadMeals();
                         },
                       ),
                     ),
@@ -208,6 +196,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
                           setState(() {
                             selectedMealType = 'Dinner';
                           });
+                          _loadMeals();
                         },
                       ),
                     ),
@@ -233,5 +222,3 @@ class _MealPlanPageState extends State<MealPlanPage> {
     );
   }
 }
-
-
