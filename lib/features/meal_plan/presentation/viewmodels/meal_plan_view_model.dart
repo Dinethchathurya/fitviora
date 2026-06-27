@@ -1,47 +1,58 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/food_item.dart';
-import '../../domain/repositories/food_repository.dart';
-import '../../domain/services/meal_suggestion_service.dart';
+import '../../data/repositories/food_component_repository.dart';
+import '../../domain/entities/food_component.dart';
 
 class MealPlanViewModel extends ChangeNotifier {
   MealPlanViewModel({
-    required FoodRepository repository,
-    required MealSuggestionService suggestionService,
-  })  : _repository = repository,
-        _suggestionService = suggestionService;
+    required FoodComponentRepository repository,
+  }) : _repository = repository;
 
-  final FoodRepository _repository;
-  final MealSuggestionService _suggestionService;
+  final FoodComponentRepository _repository;
 
-  List<FoodItem> _meals = [];
+  List<FoodComponent> _availableFoods = [];
 
-  List<FoodItem> get meals => _meals;
+  List<FoodComponent> get availableFoods => _availableFoods;
 
   bool _loading = false;
 
   bool get loading => _loading;
 
-  Future<void> loadMeals({
-    required String mealType,
-    required String dietaryPreference,
-    required String goal,
-    List<String> allergies = const [],
-  }) async {
+  String? _error;
+
+  String? get error => _error;
+
+  Future<void> loadFoodDataset() async {
     _loading = true;
+    _error = null;
     notifyListeners();
 
-    final foods = await _repository.getAllFoods();
-
-    _meals = _suggestionService.suggestMeals(
-      foods: foods,
-      mealType: mealType,
-      dietaryPreference: dietaryPreference,
-      goal: goal,
-      allergies: allergies,
-    );
+    try {
+      _availableFoods = await _repository.getAllFoodComponents();
+    } catch (e) {
+      _error = e.toString();
+      _availableFoods = [];
+    }
 
     _loading = false;
+    notifyListeners();
+  }
+
+  Future<void> refresh() async {
+    await loadFoodDataset();
+  }
+
+  FoodComponent? getFoodById(String id) {
+    try {
+      return _availableFoods.firstWhere((food) => food.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void clear() {
+    _availableFoods = [];
+    _error = null;
     notifyListeners();
   }
 }
