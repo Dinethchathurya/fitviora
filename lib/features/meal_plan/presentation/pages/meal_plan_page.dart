@@ -165,6 +165,7 @@ import '../viewmodels/meal_plan_view_model.dart';
 import '../widgets/meal_type_tab.dart';
 import '../widgets/smart_portions_info_card.dart';
 import '../../data/repositories/food_component_repository.dart';
+import '../../data/repositories/user_meal_profile_repository.dart';
 
 class MealPlanPage extends StatefulWidget {
   const MealPlanPage({super.key});
@@ -184,10 +185,11 @@ class _MealPlanPageState extends State<MealPlanPage> {
 
     _viewModel = MealPlanViewModel(
       repository: FoodComponentRepository(),
+      userProfileRepository: const UserMealProfileRepository(),
     );
 
     _viewModel.addListener(_onViewModelChanged);
-    _viewModel.loadFoodDataset();
+    _viewModel.loadFoodDataset(mealType: selectedMealType);
   }
 
   void _onViewModelChanged() {
@@ -206,13 +208,13 @@ class _MealPlanPageState extends State<MealPlanPage> {
     setState(() {
       selectedMealType = mealType;
     });
+
+    _viewModel.filterByMealType(mealType);
   }
 
   @override
   Widget build(BuildContext context) {
-    final filteredFoods = _viewModel.availableFoods
-        .where((food) => food.mealTypes.contains(selectedMealType))
-        .toList();
+    final filteredFoods = _viewModel.availableFoods;
 
     return SafeArea(
       child: SingleChildScrollView(

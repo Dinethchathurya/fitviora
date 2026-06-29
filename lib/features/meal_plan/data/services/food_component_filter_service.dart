@@ -7,20 +7,13 @@ class FoodComponentFilterService {
     required List<FoodComponent> components,
     required String mealType,
     required String dietaryPreference,
-    required String goal,
-    required List<String> allergies,
     required List<String> healthConditions,
-    String? weatherCondition,
-    String? bmiCategory,
   }) {
     return components.where((component) {
       if (!component.mealTypes.contains(mealType)) return false;
       if (!_matchesDiet(component, dietaryPreference)) return false;
-      if (!_matchesGoal(component, goal)) return false;
-      if (_hasAllergyConflict(component, allergies)) return false;
       if (!_matchesHealthConditions(component, healthConditions)) return false;
-      if (!_matchesWeather(component, weatherCondition)) return false;
-      if (!_matchesBmi(component, bmiCategory)) return false;
+
       return true;
     }).toList();
   }
