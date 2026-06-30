@@ -21,7 +21,7 @@ class GeminiMealService {
 
     Exception? lastError;
 
-    for (var attempt = 1; attempt <= 3; attempt++) {
+    for (var attempt = 1; attempt <= 5; attempt++) {
       try {
         return await _generateWithModel(
           prompt: prompt,
