@@ -18,15 +18,15 @@ class GeminiMealPromptBuilder {
     required String weatherCondition,
     required double temperatureCelsius,
     required int humidity,
-    int mealCount = 3,
+    int mealCount = 5,
   }) {
     final limitedComponents = _pickPromptComponents(components);
 
     final payload = {
       'task':
-          'Create exactly $mealCount complete Sri Lankan $mealType meal recommendations using only availableComponents.',
+          'Generate exactly 5 meals, complete Sri Lankan $mealType meal recommendations using only availableComponents.',
       'rules': [
-        'Return exactly $mealCount meals only. Never return more than $mealCount meals.',
+        'Generate exactly 5 meals. Never return more than $mealCount meals.',
         'The meals array length must be exactly $mealCount.',
         'Keep portionSize under 45 characters.',
         'Do not write long combined descriptions in portionSize.',
@@ -137,7 +137,7 @@ class GeminiMealPromptBuilder {
           item.mealRole.toLowerCase() == 'protein' ||
           item.pairingRoles.contains('Protein') ||
           item.category.toLowerCase().contains('protein')),
-      8,
+      5,
     );
 
     final vegetables = randomTake(
@@ -145,7 +145,7 @@ class GeminiMealPromptBuilder {
           item.mealRole.toLowerCase() == 'vegetable' ||
           item.pairingRoles.contains('Vegetable') ||
           item.category.toLowerCase().contains('vegetable')),
-      8,
+      5,
     );
 
     final sides = randomTake(
@@ -154,7 +154,7 @@ class GeminiMealPromptBuilder {
           item.pairingRoles.contains('Side') ||
           item.name.toLowerCase().contains('sambal') ||
           item.name.toLowerCase().contains('mallum')),
-      6,
+      4,
     );
 
     final fallback = randomTake(components, 10);

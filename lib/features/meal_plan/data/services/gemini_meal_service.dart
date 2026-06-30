@@ -39,7 +39,7 @@ class GeminiMealService {
         'generationConfig': {
           'temperature': 0.3,
           'topP': 0.8,
-          'maxOutputTokens': 8192,
+          'maxOutputTokens': 9000,
           'responseMimeType': 'application/json',
         },
       }),
