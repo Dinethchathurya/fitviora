@@ -12,6 +12,7 @@ class MealCard extends StatelessWidget {
   final String fat;
   final String portionSize;
   final VoidCallback? onSelect;
+  final String buttonText;
 
   const MealCard({
     super.key,
@@ -22,6 +23,7 @@ class MealCard extends StatelessWidget {
     required this.carbs,
     required this.fat,
     required this.portionSize,
+    required this.buttonText,
     this.onSelect,
   });
 
@@ -143,9 +145,9 @@ class MealCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text(
-                'Select This Meal',
-                style: TextStyle(
+              child: Text(
+                buttonText,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                 ),
