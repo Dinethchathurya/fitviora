@@ -74,9 +74,6 @@ class SelectedMealRepository {
 
       'selectedDate':
           selectedDate,
-      'selectedAt': now.toIso8601String(),
-
-      'createdAt': FieldValue.serverTimestamp(),
     });
 
   
