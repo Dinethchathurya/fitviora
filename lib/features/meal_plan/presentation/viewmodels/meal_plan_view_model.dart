@@ -1,6 +1,8 @@
+
 import 'package:flutter/foundation.dart';
 
 import '../../data/repositories/food_component_repository.dart';
+import '../../data/repositories/selected_meal_repository.dart';
 import '../../data/repositories/user_meal_profile_repository.dart';
 import '../../data/services/food_component_filter_service.dart';
 import '../../data/services/gemini_meal_prompt_builder.dart';
@@ -14,17 +16,20 @@ class MealPlanViewModel extends ChangeNotifier {
     required FoodComponentRepository repository,
     required UserMealProfileRepository userProfileRepository,
     required GeminiMealService geminiMealService,
+    required SelectedMealRepository selectedMealRepository,
     FoodComponentFilterService filterService = const FoodComponentFilterService(),
     GeminiMealPromptBuilder promptBuilder = const GeminiMealPromptBuilder(),
   })  : _repository = repository,
         _userProfileRepository = userProfileRepository,
         _geminiMealService = geminiMealService,
+        _selectedMealRepository = selectedMealRepository,
         _filterService = filterService,
         _promptBuilder = promptBuilder;
 
   final FoodComponentRepository _repository;
   final UserMealProfileRepository _userProfileRepository;
   final GeminiMealService _geminiMealService;
+  final SelectedMealRepository _selectedMealRepository;
   final FoodComponentFilterService _filterService;
   final GeminiMealPromptBuilder _promptBuilder;
 
@@ -109,6 +114,24 @@ class MealPlanViewModel extends ChangeNotifier {
       dietaryPreference: profile.foodPreference,
       healthConditions: profile.healthConditions,
     );
+  }
+
+  Future<bool> selectMeal({
+    required AiMealRecommendation meal,
+    required String mealType,
+  }) async {
+    try {
+      await _selectedMealRepository.saveSelectedMeal(
+        meal: meal,
+        mealType: mealType,
+      );
+
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
 
   void clear() {

@@ -328,6 +328,7 @@ import '../viewmodels/meal_plan_view_model.dart';
 import '../widgets/meal_card.dart';
 import '../widgets/meal_type_tab.dart';
 import '../widgets/smart_portions_info_card.dart';
+import '../../data/repositories/selected_meal_repository.dart';
 
 class MealPlanPage extends StatefulWidget {
   const MealPlanPage({super.key});
@@ -348,6 +349,7 @@ class _MealPlanPageState extends State<MealPlanPage> {
     _viewModel = MealPlanViewModel(
       repository: const FoodComponentRepository(),
       userProfileRepository: const UserMealProfileRepository(),
+      selectedMealRepository: const SelectedMealRepository(),
       geminiMealService: GeminiMealService(
         apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
       ),
@@ -479,10 +481,26 @@ class _MealPlanPageState extends State<MealPlanPage> {
                     carbs: '${meal.carbsG.round()}g',
                     fat: '${meal.fatG.round()}g',
                     portionSize: meal.portionSize,
-                    onSelect: () {},
+                    onSelect: () async {
+                      final success = await _viewModel.selectMeal(
+                        meal: meal,
+                        mealType: selectedMealType,
+                      );
+
+                      if (!context.mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            success
+                                ? 'Meal saved successfully.'
+                                : _viewModel.error ?? 'Failed to save meal.',
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-
               const SizedBox(height: 8),
               const SmartPortionsInfoCard(),
               const SizedBox(height: 24),
