@@ -1,6 +1,6 @@
 
 import 'dart:convert';
-
+import 'dart:math';
 import '../../domain/entities/food_component.dart';
 
 class GeminiMealPromptBuilder {
@@ -24,15 +24,33 @@ class GeminiMealPromptBuilder {
 
     final payload = {
       'task':
-          'Create exactly only $mealCount Sri Lankan $mealType meal recommendations using only availableComponents.',
+          'Create exactly $mealCount complete Sri Lankan $mealType meal recommendations using only availableComponents.',
       'rules': [
+        'Return exactly $mealCount meals only. Never return more than $mealCount meals.',
+        'The meals array length must be exactly $mealCount.',
+        'Keep portionSize under 45 characters.',
+        'Do not write long combined descriptions in portionSize.',
+        'Use short portionSize like "1 plate", "1 bowl", or "Rice 80g + Curry 100g".',
         'Return valid JSON only.',
         'Do not use markdown.',
         'Do not invent foods.',
         'Use only component ids from availableComponents.',
-        'Each meal must be practical and culturally suitable in Sri Lanka.',
-        'Each meal must include portion sizes.',
+        'Do not recommend a single food item as a meal.',
+        'Every meal must be a full meal combination, not just a base food.',
+        'Each meal must include portion sizes for every selected component.',
+        'Calculate totalCalories, proteinG, carbsG, and fatG by summing the selected components.',
+        'Use nutrition values from availableComponents only.',
         'Consider goal, BMI, allergies, health conditions, and weather.',
+      ],
+      'mealCompositionRules': [
+        'For Lunch and Dinner, each meal must include at least 3 components.',
+        'For Lunch and Dinner, each meal should normally include: 1 Base + 1 Curry/Protein + 1 Vegetable or Side.',
+        'For Breakfast, each meal must include at least 2 components.',
+        'For Breakfast, acceptable combinations include kiribath + lunu miris, hoppers + dhal curry, string hoppers + dhal curry, roti + sambol, bread + curry, or similar available combinations.',
+        'Never output only rice, bread, roti, hoppers, or string hoppers alone.',
+        'Use bestWith relationships when available.',
+        'Avoid avoidWith relationships.',
+        'If a complete meal cannot be formed, use the closest sensible Sri Lankan combination from availableComponents.',
       ],
       'userContext': {
         'mealType': mealType,
@@ -54,7 +72,7 @@ class GeminiMealPromptBuilder {
             'title': 'string',
             'description': 'string',
             'tags': ['string'],
-            'portionSize': 'string',
+            'portionSize': 'combined portion summary',
             'totalCalories': 0,
             'proteinG': 0,
             'carbsG': 0,
@@ -98,38 +116,48 @@ class GeminiMealPromptBuilder {
     };
   }
 
-
-
+    
   List<FoodComponent> _pickPromptComponents(List<FoodComponent> components) {
+    final random = Random();
+
+    List<FoodComponent> randomTake(
+      Iterable<FoodComponent> items,
+      int count,
+    ) {
+      final list = items.toList()..shuffle(random);
+      return list.take(count).toList();
+    }
+
     final bases = components
         .where((item) => item.mealRole.toLowerCase() == 'base')
-        .take(6)
         .toList();
 
-    final proteins = components
-        .where((item) =>
-            item.mealRole.toLowerCase() == 'protein' ||
-            item.pairingRoles.contains('Protein') ||
-            item.category.toLowerCase().contains('protein'))
-        .take(8)
-        .toList();
+    final proteins = randomTake(
+      components.where((item) =>
+          item.mealRole.toLowerCase() == 'protein' ||
+          item.pairingRoles.contains('Protein') ||
+          item.category.toLowerCase().contains('protein')),
+      8,
+    );
 
-    final vegetables = components
-        .where((item) =>
-            item.mealRole.toLowerCase() == 'vegetable' ||
-            item.pairingRoles.contains('Vegetable') ||
-            item.category.toLowerCase().contains('vegetable'))
-        .take(8)
-        .toList();
+    final vegetables = randomTake(
+      components.where((item) =>
+          item.mealRole.toLowerCase() == 'vegetable' ||
+          item.pairingRoles.contains('Vegetable') ||
+          item.category.toLowerCase().contains('vegetable')),
+      8,
+    );
 
-    final sides = components
-        .where((item) =>
-            item.mealRole.toLowerCase() == 'side' ||
-            item.pairingRoles.contains('Side') ||
-            item.name.toLowerCase().contains('sambal') ||
-            item.name.toLowerCase().contains('mallum'))
-        .take(6)
-        .toList();
+    final sides = randomTake(
+      components.where((item) =>
+          item.mealRole.toLowerCase() == 'side' ||
+          item.pairingRoles.contains('Side') ||
+          item.name.toLowerCase().contains('sambal') ||
+          item.name.toLowerCase().contains('mallum')),
+      6,
+    );
+
+    final fallback = randomTake(components, 10);
 
     final selected = <String, FoodComponent>{};
 
@@ -138,11 +166,14 @@ class GeminiMealPromptBuilder {
       ...proteins,
       ...vegetables,
       ...sides,
-      ...components.take(10),
+      ...fallback,
     ]) {
       selected[item.id] = item;
     }
 
     return selected.values.take(25).toList();
   }
+
+
+ 
 }

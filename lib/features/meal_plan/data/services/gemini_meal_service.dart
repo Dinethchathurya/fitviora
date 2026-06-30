@@ -1,89 +1,3 @@
-// import 'dart:convert';
-
-// import 'package:http/http.dart' as http;
-
-// import '../../domain/entities/ai_meal_recommendation.dart';
-
-// class GeminiMealService {
-//   const GeminiMealService({
-//     required this.apiKey,
-//   });
-
-//   final String apiKey;
-
-//   Future<List<AiMealRecommendation>> generateMeals(String prompt) async {
-//     if (apiKey.isEmpty) {
-//       throw Exception('Gemini API key is missing');
-//     }
-
-//     final uri = Uri.parse(
-//       'https://generativelanguage.googleapis.com/v1beta/models/'
-//       'gemini-2.5-flash:generateContent?key=$apiKey',
-//     );
-
-//     final response = await http.post(
-//       uri,
-//       headers: const {
-//         'Content-Type': 'application/json',
-//       },
-//       body: jsonEncode({
-//         'contents': [
-//           {
-//             'parts': [
-//               {'text': prompt}
-//             ],
-//           }
-//         ],
-//         'generationConfig': {
-//           'temperature': 0.4,
-//           'topP': 0.9,
-//           'maxOutputTokens': 2048,
-//           'responseMimeType': 'application/json',
-//         },
-//       }),
-//     );
-
-//     print("==================================");
-//     print(response.body);
-//     print("==================================");
-
-//     if (response.statusCode != 200) {
-//       throw Exception('Gemini API failed: ${response.body}');
-//     }
-
-//     final body = jsonDecode(response.body) as Map<String, dynamic>;
-
-//     final candidates = body['candidates'] as List<dynamic>?;
-//     if (candidates == null || candidates.isEmpty) {
-//       throw Exception('Gemini returned no candidates');
-//     }
-
-//     final content = candidates.first['content'] as Map<String, dynamic>?;
-//     final parts = content?['parts'] as List<dynamic>?;
-
-//     if (parts == null || parts.isEmpty) {
-//       throw Exception('Gemini returned empty content');
-//     }
-
-//     final text = parts.first['text']?.toString() ?? '';
-//     if (text.isEmpty) {
-//       throw Exception('Gemini response text is empty');
-//     }
-
-//     final decoded = jsonDecode(text) as Map<String, dynamic>;
-//     final mealsJson = decoded['meals'] as List<dynamic>?;
-
-//     if (mealsJson == null) {
-//       throw Exception('Gemini JSON does not contain meals');
-//     }
-
-//     return mealsJson
-//         .map((item) => AiMealRecommendation.fromJson(
-//               item as Map<String, dynamic>,
-//             ))
-//         .toList();
-//   }
-// }
 
 
 import 'dart:convert';
@@ -171,6 +85,7 @@ class GeminiMealService {
     }
 
     return mealsJson
+        .take(5) 
         .map(
           (item) => AiMealRecommendation.fromJson(
             item as Map<String, dynamic>,
