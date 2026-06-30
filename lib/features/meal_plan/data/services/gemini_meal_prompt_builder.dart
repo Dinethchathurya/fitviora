@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import '../../domain/entities/food_component.dart';
@@ -19,14 +20,19 @@ class GeminiMealPromptBuilder {
     required int humidity,
     int mealCount = 3,
   }) {
+    final limitedComponents = _pickPromptComponents(components);
+
     final payload = {
-      'task': 'Create Sri Lankan meal recommendations from the provided food components only.',
+      'task':
+          'Create exactly only $mealCount Sri Lankan $mealType meal recommendations using only availableComponents.',
       'rules': [
-        'Return valid JSON only. Do not include markdown.',
+        'Return valid JSON only.',
+        'Do not use markdown.',
+        'Do not invent foods.',
         'Use only component ids from availableComponents.',
-        'Each meal must include a sensible Sri Lankan combination, for example base + protein/curry + vegetable/side where appropriate.',
-        'Avoid allergens and unsuitable health-condition items.',
-        'Consider weather, goal and BMI category when selecting meals.',
+        'Each meal must be practical and culturally suitable in Sri Lanka.',
+        'Each meal must include portion sizes.',
+        'Consider goal, BMI, allergies, health conditions, and weather.',
       ],
       'userContext': {
         'mealType': mealType,
@@ -36,57 +42,107 @@ class GeminiMealPromptBuilder {
         'healthConditions': healthConditions,
         'bmi': bmi,
         'bmiCategory': bmiCategory,
-        'weather': {
-          'condition': weatherCondition,
-          'temperatureCelsius': temperatureCelsius,
-          'humidity': humidity,
-        },
+        'weatherCondition': weatherCondition,
+        'temperatureCelsius': temperatureCelsius,
+        'humidity': humidity,
       },
-      'outputJsonSchema': {
+      'requiredJsonOutput': {
+        'mealType': mealType,
+        'mealCount': mealCount,
         'meals': [
           {
             'title': 'string',
-            'mealType': 'string',
+            'description': 'string',
+            'tags': ['string'],
+            'portionSize': 'string',
+            'totalCalories': 0,
+            'proteinG': 0,
+            'carbsG': 0,
+            'fatG': 0,
             'componentIds': ['string'],
-            'reason': 'string',
-            'healthNotes': ['string'],
+            'components': [
+              {
+                'id': 'string',
+                'name': 'string',
+                'portion': 'string',
+              }
+            ],
+            'whyRecommended': ['string'],
             'weatherNote': 'string',
-            'nutritionEstimate': {
-              'caloriesKcal': 'number',
-              'proteinG': 'number',
-              'carbsG': 'number',
-              'fatG': 'number',
-            },
+            'goalNote': 'string',
+            'healthNote': 'string',
           }
         ],
       },
-      'mealCount': mealCount,
-      'availableComponents': components.map(_componentToPromptJson).toList(),
+      'availableComponents':
+          limitedComponents.map(_componentToPromptJson).toList(),
     };
 
-    return const JsonEncoder.withIndent('  ').convert(payload);
+    return jsonEncode(payload);
   }
 
   Map<String, dynamic> _componentToPromptJson(FoodComponent component) {
     return {
       'id': component.id,
       'name': component.name,
-      'mealTypes': component.mealTypes,
-      'mealRole': component.mealRole,
-      'category': component.category,
-      'servingLabel': component.servingLabel,
-      'nutrition': {
-        'caloriesKcal': component.nutrition.caloriesKcal,
-        'proteinG': component.nutrition.proteinG,
-        'carbsG': component.nutrition.carbsG,
-        'fatG': component.nutrition.fatG,
-      },
-      'dietTags': component.dietTags,
-      'healthFlags': component.healthFlags,
-      'avoidWeatherTags': component.avoidWeatherTags,
-      'allergenTags': component.allergenTags,
+      'role': component.mealRole,
+      'portion': component.servingLabel,
+      'cal': component.nutrition.caloriesKcal,
+      'protein': component.nutrition.proteinG,
+      'carbs': component.nutrition.carbsG,
+      'fat': component.nutrition.fatG,
+      'flags': component.healthFlags,
       'pairingRoles': component.pairingRoles,
-      'llmHints': component.llmHints,
+      'bestWith': component.llmHints['bestWith'] ?? [],
+      'avoidWith': component.llmHints['avoidWith'] ?? [],
     };
+  }
+
+
+
+  List<FoodComponent> _pickPromptComponents(List<FoodComponent> components) {
+    final bases = components
+        .where((item) => item.mealRole.toLowerCase() == 'base')
+        .take(6)
+        .toList();
+
+    final proteins = components
+        .where((item) =>
+            item.mealRole.toLowerCase() == 'protein' ||
+            item.pairingRoles.contains('Protein') ||
+            item.category.toLowerCase().contains('protein'))
+        .take(8)
+        .toList();
+
+    final vegetables = components
+        .where((item) =>
+            item.mealRole.toLowerCase() == 'vegetable' ||
+            item.pairingRoles.contains('Vegetable') ||
+            item.category.toLowerCase().contains('vegetable'))
+        .take(8)
+        .toList();
+
+    final sides = components
+        .where((item) =>
+            item.mealRole.toLowerCase() == 'side' ||
+            item.pairingRoles.contains('Side') ||
+            item.name.toLowerCase().contains('sambal') ||
+            item.name.toLowerCase().contains('mallum'))
+        .take(6)
+        .toList();
+
+    final selected = <String, FoodComponent>{};
+
+    for (final item in [
+      ...bases,
+      ...proteins,
+      ...vegetables,
+      ...sides,
+      ...components.take(10),
+    ]) {
+      selected[item.id] = item;
+    }
+
+    return selected.values.take(25).toList();
   }
 }
