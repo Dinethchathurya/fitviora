@@ -116,14 +116,17 @@ class MealCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
+              Expanded(
+                child: Text(
                 portionSize,
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: AppColors.gray900,
                 ),
               ),
+              ),
+              
             ],
           ),
           const SizedBox(height: 12),

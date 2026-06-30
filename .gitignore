@@ -119,3 +119,5 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 lib/features/profile/presentation/.DS_Store
 .DS_Store
+.env
+.DS_Store

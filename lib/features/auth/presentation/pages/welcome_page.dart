@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/routes/app_routes.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_card_container.dart';
 import '../../../../core/widgets/app_primary_button.dart';
 import '../../../../core/widgets/fitviora_logo.dart';
