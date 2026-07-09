@@ -11,12 +11,50 @@ import '../widgets/section_title.dart';
 import '../widgets/nutrient_row.dart';
 
 import '../widgets/quick_action_card.dart';
+import '../viewmodels/home_page_view_model.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late final HomePageViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _viewModel = HomePageViewModel();
+
+    _viewModel.addListener(_onViewModelChanged);
+
+    _viewModel.loadHomeData();
+  }
+
+  void _onViewModelChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelChanged);
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_viewModel.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_viewModel.error != null) {
+      return Center(child: Text(_viewModel.error!));
+    }
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -25,7 +63,10 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 12),
-              const HomeHeaderCard(),
+              HomeHeaderCard(
+                userName: _viewModel.fullName,
+                date: _viewModel.todayLabel,
+              ),
               const SizedBox(height: 16),
 
               // Daily Calorie Target
@@ -40,8 +81,11 @@ class HomePage extends StatelessWidget {
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.local_fire_department,
-                                size: 18, color: AppColors.white),
+                            Icon(
+                              Icons.local_fire_department,
+                              size: 18,
+                              color: AppColors.white,
+                            ),
                             SizedBox(width: 10),
                             Text(
                               'Daily Calorie Target',
@@ -61,8 +105,8 @@ class HomePage extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text(
-                          '544',
+                         Text(
+                          '${_viewModel.caloriesLeft}',
                           style: TextStyle(
                             fontSize: 50,
                             fontWeight: FontWeight.w900,
@@ -85,11 +129,10 @@ class HomePage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(999),
                       child: LinearProgressIndicator(
-                        value: 0.728,
+                        value: _viewModel.calorieProgress,
                         minHeight: 12,
                         backgroundColor: Colors.white.withOpacity(0.18),
-                        valueColor:
-                            const AlwaysStoppedAnimation<Color>(
+                        valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.white,
                         ),
                       ),
@@ -97,18 +140,18 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text(
-                          'Consumed: 1456 kcal',
-                          style: TextStyle(
+                          'Consumed: ${_viewModel.consumedCalories} kcal',
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: AppColors.white,
                           ),
                         ),
                         Text(
-                          'Goal: 2000 kcal',
-                          style: TextStyle(
+                          'Goal: ${_viewModel.dailyCalorieGoal} kcal',
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: AppColors.white,
@@ -135,28 +178,28 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     const SizedBox(height: 10),
-                    const _MealDistributionRow(
+                     _MealDistributionRow(
                       label: 'Breakfast',
-                      percentage: '30%',
-                      valueKcal: '600 kcal',
+                      percentage: '${_viewModel.breakfastPercentage}%',
+                      valueKcal: '${_viewModel.breakfastCalories} kcal',
                       progressColor: AppColors.orange500,
-                      progress: 0.3,
+                      progress: _viewModel.breakfastPercentage / 100,
                     ),
                     const SizedBox(height: 16),
-                    const _MealDistributionRow(
+                     _MealDistributionRow(
                       label: 'Lunch',
-                      percentage: '40%',
-                      valueKcal: '800 kcal',
+                      percentage: '${_viewModel.lunchPercentage}%',
+                      valueKcal: '${_viewModel.lunchCalories} kcal',
                       progressColor: AppColors.emerald500,
-                      progress: 0.4,
+                      progress: _viewModel.lunchPercentage / 100,
                     ),
                     const SizedBox(height: 16),
-                    const _MealDistributionRow(
+                     _MealDistributionRow(
                       label: 'Dinner',
-                      percentage: '30%',
-                      valueKcal: '600 kcal',
+                      percentage: '${_viewModel.dinnerPercentage}%',
+                      valueKcal: '${_viewModel.dinnerCalories} kcal',
                       progressColor: AppColors.blue500,
-                      progress: 0.3,
+                      progress: _viewModel.dinnerPercentage / 100,
                     ),
                   ],
                 ),
@@ -176,24 +219,28 @@ class HomePage extends StatelessWidget {
                       icon: Icons.science_outlined,
                     ),
                     const SizedBox(height: 14),
-                    const NutrientRow(
+                     NutrientRow(
                       label: 'Protein',
-                      value: '98g / 150g',
-                      progress: 0.653,
+                      value:
+                          '${_viewModel.proteinConsumed}g / ${_viewModel.proteinGoal}g',
+                      progress:
+                          _viewModel.proteinConsumed / _viewModel.proteinGoal,
                       progressColor: AppColors.blue500,
                     ),
-                    const SizedBox(height: 16),
-                    const NutrientRow(
+                     SizedBox(height: 16),
+                     NutrientRow(
                       label: 'Carbs',
-                      value: '120g / 200g',
-                      progress: 0.6,
+                      value:
+                          '${_viewModel.carbsConsumed}g / ${_viewModel.carbsGoal}g',
+                      progress: _viewModel.carbsConsumed / _viewModel.carbsGoal,
                       progressColor: AppColors.orange500,
                     ),
                     const SizedBox(height: 16),
-                    const NutrientRow(
+                     NutrientRow(
                       label: 'Fats',
-                      value: '55g / 90g',
-                      progress: 0.611,
+                      value:
+                          '${_viewModel.fatConsumed}g / ${_viewModel.fatGoal}g',
+                      progress: _viewModel.fatConsumed / _viewModel.fatGoal,
                       progressColor: AppColors.pink500,
                     ),
                   ],
@@ -325,8 +372,11 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.gray200),
                       ),
-                      child: const Icon(Icons.health_and_safety,
-                          color: AppColors.emerald600, size: 24),
+                      child: const Icon(
+                        Icons.health_and_safety,
+                        color: AppColors.emerald600,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -520,4 +570,3 @@ class _SeasonalCategory extends StatelessWidget {
     );
   }
 }
-
