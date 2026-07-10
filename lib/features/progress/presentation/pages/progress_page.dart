@@ -354,12 +354,20 @@ class _ProgressPageState extends State<ProgressPage> {
                   Expanded(
                     child: BmiSummaryCard(
                       icon: Icons.flag_outlined,
+
+                      iconColor: AppColors.orange500,
+
                       title: 'Starting',
+
                       weight:
                           '${_viewModel.startingWeightKg.toStringAsFixed(1)} kg',
+
                       bmi: _viewModel.startingBmi.toStringAsFixed(1),
-                      badgeColor: AppColors.orange500.withOpacity(0.95),
-                      badgeTextColor: AppColors.orange500,
+
+                      badgeColor: AppColors.orange500,
+
+                      badgeTextColor: AppColors.white,
+
                       badgeText: _viewModel.startingBmiCategory,
                     ),
                   ),
@@ -367,13 +375,21 @@ class _ProgressPageState extends State<ProgressPage> {
                   Expanded(
                     child: BmiSummaryCard(
                       icon: Icons.favorite_border,
+
+                      iconColor: AppColors.emerald600,
+
                       title: 'Current',
+
                       weight:
                           '${_viewModel.currentWeightKg.toStringAsFixed(1)} kg',
+
                       bmi: _viewModel.currentBmi.toStringAsFixed(1),
-                      badgeColor: AppColors.emerald500.withOpacity(0.95),
-                      badgeTextColor: AppColors.emerald100,
-                      badgeText: 'Normal',
+
+                      badgeColor: AppColors.emerald500,
+
+                      badgeTextColor: AppColors.white,
+
+                      badgeText: _viewModel.currentBmiCategory,
                     ),
                   ),
                 ],
