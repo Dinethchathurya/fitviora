@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class WeightRecord {
   const WeightRecord({
@@ -709,6 +709,104 @@ Future<bool> changeToMaintenancePlan() async {
     _isUpdatingGoal = false;
     notifyListeners();
   }
+}
+
+
+
+
+
+String get weightStatLabel {
+  if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
+    return 'Weight Change';
+  }
+
+  if (isWeightReduced) {
+    return 'Weight Lost';
+  }
+
+  if (isWeightIncreased) {
+    return 'Weight Gained';
+  }
+
+  return 'Weight Change';
+}
+
+String get weightStatValue {
+  if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
+    return '0.0 kg';
+  }
+
+  if (isWeightReduced) {
+    return '${weightLostKg.toStringAsFixed(1)} kg';
+  }
+
+  if (isWeightIncreased) {
+    return '+${weightGainedKg.toStringAsFixed(1)} kg';
+  }
+
+  return '0.0 kg';
+}
+
+String get weightStatSubtitle {
+  if (_weightRecords.isEmpty) {
+    return 'No previous records';
+  }
+
+  final recordCount = _weightRecords.length;
+
+  if (recordCount == 1) {
+    return 'Based on 1 update';
+  }
+
+  return 'Based on $recordCount updates';
+}
+
+String get bmiStatSubtitle {
+  if (startingBmi <= 0 || currentBmi <= 0) {
+    return 'BMI data unavailable';
+  }
+
+  if (bmiChange < 0) {
+    if (currentBmi >= 18.5 && currentBmi < 25) {
+      return '↘ Now in normal range';
+    }
+
+    return '↘ BMI decreased';
+  }
+
+  if (bmiChange > 0) {
+    if (currentBmi < 18.5) {
+      return '↗ Moving toward normal';
+    }
+
+    return '↗ BMI increased';
+  }
+
+  return 'No BMI change';
+}
+
+IconData get weightStatIcon {
+  if (isWeightReduced) {
+    return Icons.trending_down_rounded;
+  }
+
+  if (isWeightIncreased) {
+    return Icons.trending_up_rounded;
+  }
+
+  return Icons.remove_rounded;
+}
+
+IconData get bmiStatIcon {
+  if (bmiChange < 0) {
+    return Icons.trending_down_rounded;
+  }
+
+  if (bmiChange > 0) {
+    return Icons.trending_up_rounded;
+  }
+
+  return Icons.remove_rounded;
 }
 
 

@@ -111,7 +111,6 @@ class _ProgressPageState extends State<ProgressPage> {
     );
   }
 
-
   Future<void> _changeToMaintenancePlan() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -156,6 +155,7 @@ class _ProgressPageState extends State<ProgressPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     if (_viewModel.isLoading) {
@@ -383,7 +383,7 @@ class _ProgressPageState extends State<ProgressPage> {
 
               BmiTrendCard(
                 records: _viewModel.recentWeightRecords,
-                heightCm: _viewModel.heightCm, 
+                heightCm: _viewModel.heightCm,
               ),
 
               const SizedBox(height: 16),
@@ -419,8 +419,12 @@ class _ProgressPageState extends State<ProgressPage> {
                         color: AppColors.emerald500.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(
-                        Icons.check_circle_rounded,
+                      child: Icon(
+                        _viewModel.showCongratulations
+                            ? Icons.emoji_events_rounded
+                            : _viewModel.isCurrentBmiNormal
+                            ? Icons.check_circle_rounded
+                            : Icons.trending_up_rounded,
                         color: AppColors.emerald600,
                         size: 24,
                       ),
@@ -429,21 +433,33 @@ class _ProgressPageState extends State<ProgressPage> {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            'Congratulations! 🎉',
-                            style: TextStyle(
+                            _viewModel.showCongratulations
+                                ? 'Congratulations! 🎉'
+                                : _viewModel.progressTitle,
+
+                            style: const TextStyle(
                               fontSize: 16,
+
                               fontWeight: FontWeight.w900,
+
                               color: AppColors.gray900,
                             ),
                           ),
-                          SizedBox(height: 6),
+
+                          const SizedBox(height: 6),
+
                           Text(
-                            "You've maintained normal BMI for 2 consecutive weeks",
-                            style: TextStyle(
+                            _viewModel.showCongratulations
+                                ? _viewModel.congratulationsMessage
+                                : _viewModel.progressMessage,
+
+                            style: const TextStyle(
                               fontSize: 13,
+
                               fontWeight: FontWeight.w700,
+
                               color: AppColors.gray600,
                             ),
                           ),
@@ -468,8 +484,9 @@ class _ProgressPageState extends State<ProgressPage> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     backgroundColor: AppColors.emerald500,
                     foregroundColor: AppColors.white,
-                    disabledBackgroundColor:
-                        AppColors.emerald500.withValues(alpha: 0.6),
+                    disabledBackgroundColor: AppColors.emerald500.withValues(
+                      alpha: 0.6,
+                    ),
                     disabledForegroundColor: AppColors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -501,10 +518,7 @@ class _ProgressPageState extends State<ProgressPage> {
                   decoration: BoxDecoration(
                     color: AppColors.emerald50,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.emerald500,
-                      width: 1.5,
-                    ),
+                    border: Border.all(color: AppColors.emerald500, width: 1.5),
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -529,7 +543,7 @@ class _ProgressPageState extends State<ProgressPage> {
                     ],
                   ),
                 ),
-                            
+
               const SizedBox(height: 18),
 
               // Stats cards
@@ -538,27 +552,26 @@ class _ProgressPageState extends State<ProgressPage> {
                 children: [
                   Expanded(
                     child: ProgressStatCard(
-                      icon: Icons.trending_down_rounded,
+                      icon: _viewModel.weightStatIcon,
                       iconColor: AppColors.blue500,
-                      label: 'Weight Lost',
+                      label: _viewModel.weightStatLabel,
                       value:
                           '${_viewModel.currentWeightKg.toStringAsFixed(1)} kg',
-                      subtitle: '↘ Last 5 weeks',
+                      subtitle: _viewModel.weightStatSubtitle,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ProgressStatCard(
-                      icon: Icons.trending_up_rounded,
+                      icon: _viewModel.bmiStatIcon,
                       iconColor: const Color(0xFF8B5CF6),
                       label: 'BMI Change',
                       value: '${_viewModel.bmiChange.toStringAsFixed(1)}',
-                      subtitle: '↘ Improving',
+                      subtitle: _viewModel.bmiStatSubtitle,
                     ),
                   ),
                 ],
               ),
-
               const SizedBox(height: 90),
             ],
           ),
