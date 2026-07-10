@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +16,8 @@ class HomePageViewModel extends ChangeNotifier {
 
   FirebaseAuth get firebaseAuth => _firebaseAuth ?? FirebaseAuth.instance;
   FirebaseFirestore get firestore => _firestore ?? FirebaseFirestore.instance;
+
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _mealSubscription;
 
   bool isLoading = false;
   String? error;
@@ -48,6 +52,15 @@ class HomePageViewModel extends ChangeNotifier {
   int get breakfastPercentage => _percentage(breakfastCalories);
   int get lunchPercentage => _percentage(lunchCalories);
   int get dinnerPercentage => _percentage(dinnerCalories);
+
+  double get proteinProgress =>
+      proteinGoal <= 0 ? 0 : (proteinConsumed / proteinGoal).clamp(0.0, 1.0);
+
+  double get carbsProgress =>
+      carbsGoal <= 0 ? 0 : (carbsConsumed / carbsGoal).clamp(0.0, 1.0);
+
+  double get fatProgress =>
+      fatGoal <= 0 ? 0 : (fatConsumed / fatGoal).clamp(0.0, 1.0);
 
   String get todayLabel {
     final now = DateTime.now();
@@ -90,7 +103,7 @@ class HomePageViewModel extends ChangeNotifier {
       notifyListeners();
 
       await _loadUserProfile(user.uid);
-      await _loadTodaySelectedMeals(user.uid);
+      _listenTodaySelectedMeals(user.uid);
     } catch (e) {
       error = e.toString();
     } finally {
@@ -110,7 +123,8 @@ class HomePageViewModel extends ChangeNotifier {
 
     final weightKg = _toDouble(data['weightKg']);
     final heightCm = _toDouble(data['heightCm']);
-    final activityLevel = _stringValue(data['activityLevel'], fallback: 'Moderate');
+    final activityLevel =
+        _stringValue(data['activityLevel'], fallback: 'Moderate');
     final goal = _stringValue(data['goal'], fallback: 'Maintenance');
 
     dailyCalorieGoal = _calculateDailyCalorieGoal(
@@ -121,17 +135,52 @@ class HomePageViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> _loadTodaySelectedMeals(String userId) async {
+  void _listenTodaySelectedMeals(String userId) {
+    _mealSubscription?.cancel();
+
     final now = DateTime.now();
     final selectedDate =
         DateTime(now.year, now.month, now.day).toIso8601String();
 
-    final snapshot = await firestore
+    _mealSubscription = firestore
         .collection('selected_meals')
         .where('userId', isEqualTo: userId)
         .where('selectedDate', isEqualTo: selectedDate)
-        .get();
+        .snapshots()
+        .listen(
+      (snapshot) {
+        _resetMealTotals();
 
+        for (final doc in snapshot.docs) {
+          final data = doc.data();
+
+          final mealType = _stringValue(data['mealType'], fallback: '');
+          final calories = _toInt(data['totalCalories']);
+
+          consumedCalories += calories;
+          proteinConsumed += _toDouble(data['proteinG']).round();
+          carbsConsumed += _toDouble(data['carbsG']).round();
+          fatConsumed += _toDouble(data['fatG']).round();
+
+          if (mealType == 'Breakfast') {
+            breakfastCalories += calories;
+          } else if (mealType == 'Lunch') {
+            lunchCalories += calories;
+          } else if (mealType == 'Dinner') {
+            dinnerCalories += calories;
+          }
+        }
+
+        notifyListeners();
+      },
+      onError: (e) {
+        error = e.toString();
+        notifyListeners();
+      },
+    );
+  }
+
+  void _resetMealTotals() {
     consumedCalories = 0;
     proteinConsumed = 0;
     carbsConsumed = 0;
@@ -140,26 +189,6 @@ class HomePageViewModel extends ChangeNotifier {
     breakfastCalories = 0;
     lunchCalories = 0;
     dinnerCalories = 0;
-
-    for (final doc in snapshot.docs) {
-      final data = doc.data();
-
-      final mealType = _stringValue(data['mealType'], fallback: '');
-      final calories = _toInt(data['totalCalories']);
-
-      consumedCalories += calories;
-      proteinConsumed += _toDouble(data['proteinG']).round();
-      carbsConsumed += _toDouble(data['carbsG']).round();
-      fatConsumed += _toDouble(data['fatG']).round();
-
-      if (mealType == 'Breakfast') {
-        breakfastCalories += calories;
-      } else if (mealType == 'Lunch') {
-        lunchCalories += calories;
-      } else if (mealType == 'Dinner') {
-        dinnerCalories += calories;
-      }
-    }
   }
 
   int _calculateDailyCalorieGoal({
@@ -214,5 +243,11 @@ class HomePageViewModel extends ChangeNotifier {
     if (value is double) return value;
     if (value is int) return value.toDouble();
     return double.tryParse(value.toString()) ?? 0;
+  }
+
+  @override
+  void dispose() {
+    _mealSubscription?.cancel();
+    super.dispose();
   }
 }
