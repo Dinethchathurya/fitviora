@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/constants/app_colors.dart';
+import '../viewmodels/progress_view_model.dart';
 
 class BmiTrendCard extends StatelessWidget {
-  const BmiTrendCard({super.key});
+  const BmiTrendCard({
+    super.key,
+    required this.records,
+    required this.heightCm,
+  });
+
+  final List<WeightRecord> records;
+  final double heightCm;
 
   @override
   Widget build(BuildContext context) {
-    const weekRows = [
-      {'week': 'Week 1', 'bmi': 24.5, 'weight': 75.0, 'latest': false},
-      {'week': 'Week 2', 'bmi': 24.2, 'weight': 74.0, 'latest': false},
-      {'week': 'Week 3', 'bmi': 23.7, 'weight': 72.5, 'latest': false},
-      {'week': 'Week 4', 'bmi': 23.2, 'weight': 71.0, 'latest': false},
-      {'week': 'Week 5', 'bmi': 22.9, 'weight': 70.0, 'latest': true},
-    ];
-
+    final displayRecords = records.length <= 5
+        ? records
+        : records.sublist(records.length - 5);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -23,7 +26,7 @@ class BmiTrendCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -43,77 +46,110 @@ class BmiTrendCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
-          ...weekRows.map((e) {
-            final week = e['week'] as String;
-            final bmi = e['bmi'] as double;
-            final weight = e['weight'] as double;
-            final isLatest = e['latest'] as bool;
 
+          if (displayRecords.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Text(
+                'No weight history available yet.',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.gray600,
+                ),
+              ),
+            )
+          else
+            ...List.generate(displayRecords.length, (index) {
+              final record = displayRecords[index];
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 48,
-                    child: Text(
-                      week,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: isLatest ? AppColors.emerald500 : AppColors.gray600,
+              final bmi = ProgressViewModel.calculateBmi(
+                weightKg: record.weightKg,
+                heightCm: heightCm,
+              );
+
+              final isLatest = index == displayRecords.length - 1;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 58,
+                      child: Text(
+                        'Record ${index + 1}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: isLatest
+                              ? AppColors.emerald500
+                              : AppColors.gray600,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        LinearProgressIndicator(
-                          value: _clamp01((bmi - 22.0) / (25.0 - 22.0)),
-                          minHeight: 8,
-                          backgroundColor: AppColors.gray200,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            isLatest ? AppColors.emerald500 : AppColors.gray500,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LinearProgressIndicator(
+                            value: _bmiProgress(bmi),
+                            minHeight: 8,
+                            backgroundColor: AppColors.gray200,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isLatest
+                                  ? AppColors.emerald500
+                                  : AppColors.gray500,
+                            ),
+                            borderRadius: BorderRadius.circular(999),
                           ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Text(
-                              bmi.toStringAsFixed(1),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: isLatest ? AppColors.emerald600 : AppColors.gray500,
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Text(
+                                bmi.toStringAsFixed(1),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: isLatest
+                                      ? AppColors.emerald600
+                                      : AppColors.gray500,
+                                ),
                               ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '${weight.toStringAsFixed(weight.truncateToDouble() == weight ? 0 : 1)} kg',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.gray900,
+                              const Spacer(),
+                              Text(
+                                '${_formatWeight(record.weightKg)} kg',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.gray900,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                  ],
+                ),
+              );
+            }),
         ],
       ),
     );
   }
 
-  double _clamp01(double v) => v.clamp(0.0, 1.0);
-}
+  double _bmiProgress(double bmi) {
+    if (bmi <= 0) return 0;
 
+    return (bmi / 40).clamp(0.0, 1.0);
+  }
+
+  String _formatWeight(double weight) {
+    if (weight == weight.roundToDouble()) {
+      return weight.toStringAsFixed(0);
+    }
+
+    return weight.toStringAsFixed(1);
+  }
+}
