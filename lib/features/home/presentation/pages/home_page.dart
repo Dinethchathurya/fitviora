@@ -248,14 +248,15 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 16),
 
+
               // Seasonal Foods
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.emerald100.withOpacity(0.35),
+                  color: AppColors.emerald100.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.emerald600.withOpacity(0.12),
+                      color: AppColors.emerald600.withValues(alpha: 0.12),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -269,20 +270,20 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Seasonal Foods - February',
-                                style: TextStyle(
+                                'Seasonal Foods - ${_viewModel.currentMonthName}',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
                                   color: AppColors.gray900,
                                 ),
                               ),
-                              SizedBox(height: 6),
-                              Text(
+                              const SizedBox(height: 6),
+                              const Text(
                                 'Fresh and nutritious foods available this month in Sri Lanka',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -295,50 +296,64 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-
-                    _SeasonalCategory(
-                      titleEmoji: 'FRUITS 🍎',
-                      pillBackground: const Color(0xFFFFE0CC),
-                      pillBorder: const Color(0xFFFFC7A3),
-                      pills: const [
-                        'Mango (Amba)',
-                        'Papaya (Papol)',
-                        'Pineapple (Annasi)',
-                        'Banana (Kesel)',
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    _SeasonalCategory(
-                      titleEmoji: 'VEGETABLES 🥬',
-                      pillBackground: const Color(0xFFD9FAD9),
-                      pillBorder: const Color(0xFFB8F5B8),
-                      pills: const [
-                        'Pumpkin (Wattakka)',
-                        'Snake Gourd (Pathola)',
-                        'Bitter Gourd (Karawila)',
-                        'Okra (Bandakka)',
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    _SeasonalCategory(
-                      titleEmoji: 'FISH & PROTEIN 🐟',
-                      pillBackground: const Color(0xFFDCEBFF),
-                      pillBorder: const Color(0xFFBFD7FF),
-                      pills: const [
-                        'Tuna (Kelawalla)',
-                        'Mackerel (Kumbalawa)',
-                        'Prawns (Isso)',
-                      ],
-                    ),
 
                     const SizedBox(height: 16),
+
+                    if (_viewModel.seasonalFruitNames.isNotEmpty)
+                      _SeasonalCategory(
+                        titleEmoji: 'FRUITS 🍎',
+                        pillBackground: const Color(0xFFFFE0CC),
+                        pillBorder: const Color(0xFFFFC7A3),
+                        pills: _viewModel.seasonalFruitNames,
+                      ),
+
+                    if (_viewModel.seasonalFruitNames.isNotEmpty &&
+                        _viewModel.seasonalVegetableNames.isNotEmpty)
+                      const SizedBox(height: 14),
+
+                    if (_viewModel.seasonalVegetableNames.isNotEmpty)
+                      _SeasonalCategory(
+                        titleEmoji: 'VEGETABLES 🥬',
+                        pillBackground: const Color(0xFFD9FAD9),
+                        pillBorder: const Color(0xFFB8F5B8),
+                        pills: _viewModel.seasonalVegetableNames,
+                      ),
+
+                    if (_viewModel.seasonalVegetableNames.isNotEmpty &&
+                        _viewModel.seasonalFishAndProteinNames.isNotEmpty)
+                      const SizedBox(height: 14),
+
+                    if (_viewModel.seasonalFishAndProteinNames.isNotEmpty)
+                      _SeasonalCategory(
+                        titleEmoji: 'FISH & PROTEIN 🐟',
+                        pillBackground: const Color(0xFFDCEBFF),
+                        pillBorder: const Color(0xFFBFD7FF),
+                        pills: _viewModel.seasonalFishAndProteinNames,
+                      ),
+
+                    if (_viewModel.seasonalFoods.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          'No seasonal foods are available for this month.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.gray600,
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 16),
+
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFF6D6),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: const Color(0xFFFFE3A3)),
+                        border: Border.all(
+                          color: const Color(0xFFFFE3A3),
+                        ),
                       ),
                       child: const Text(
                         '💡 Tip:\nSeasonal foods are fresher, more affordable, and packed with nutrients!',
@@ -353,6 +368,10 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
+
+              const SizedBox(height: 16),
+
+
               const SizedBox(height: 16),
 
               // Health Status
