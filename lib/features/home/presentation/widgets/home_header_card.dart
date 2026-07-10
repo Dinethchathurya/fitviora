@@ -3,7 +3,19 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class HomeHeaderCard extends StatelessWidget {
-  const HomeHeaderCard({super.key});
+  final String userName;
+
+  final String date;
+
+  const HomeHeaderCard({
+
+    super.key,
+
+    required this.userName,
+
+    required this.date,
+
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +37,19 @@ class HomeHeaderCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Hello, John! 👋',
-                  style: TextStyle(
+                  'Hello, $userName! 👋',
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
                     color: AppColors.gray900,
                   ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
-                  'Tuesday, May 26',
-                  style: TextStyle(
+                  date,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.gray600,
@@ -46,25 +58,7 @@ class HomeHeaderCard extends StatelessWidget {
               ],
             ),
           ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const Icon(Icons.notifications_none_outlined,
-                  size: 26, color: AppColors.gray900),
-              Positioned(
-                right: -2,
-                top: -2,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    color: AppColors.red500,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              )
-            ],
-          ),
+        
         ],
       ),
     );

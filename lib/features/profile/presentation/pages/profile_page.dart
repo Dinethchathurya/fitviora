@@ -159,7 +159,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 showEdit: true,
                 content: [
                   _SingleRow(data: _RowData(Icons.email_outlined, 'Email', vm.displayEmail)),
-                  _SingleRow(data: _RowData(Icons.phone_outlined, 'Phone', '+94 77 123 4567')),
                   _SingleRow(data: _RowData(Icons.calendar_today_outlined, 'Date of Birth', vm.displayDob)),
                   _SingleRow(data: _RowData(Icons.person_outline, 'Gender', vm.displayGender)),
                 ],
