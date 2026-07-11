@@ -406,9 +406,8 @@ class _ProgressPageState extends State<ProgressPage> {
 
               // Status message cards
               ProgressStatusCard(
-                title: 'Great progress!',
-                text:
-                    'Your BMI is moving toward a healthier range. Keep following your current plan.',
+                title: _viewModel.progressTitle,
+                text: _viewModel.progressMessage,
               ),
 
               const SizedBox(height: 12),
@@ -536,20 +535,20 @@ class _ProgressPageState extends State<ProgressPage> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.emerald500, width: 1.5),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.check_circle_rounded,
                         color: AppColors.emerald600,
                         size: 20,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Flexible(
                         child: Text(
-                          'You are in the Maintenance Plan.',
+                          _viewModel.maintenanceStatusText,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
                             color: AppColors.emerald600,
@@ -559,7 +558,6 @@ class _ProgressPageState extends State<ProgressPage> {
                     ],
                   ),
                 ),
-
               const SizedBox(height: 18),
 
               // Stats cards

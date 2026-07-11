@@ -22,33 +22,30 @@ class WeightRecord {
 
     return WeightRecord(
       weightKg: ProgressViewModel.toDouble(data['weightKg']),
-      previousWeightKg:
-          ProgressViewModel.toDouble(data['previousWeightKg']),
+      previousWeightKg: ProgressViewModel.toDouble(data['previousWeightKg']),
       recordedAt: ProgressViewModel.toDateTime(data['recordedAt']),
     );
   }
 }
 
+enum BmiProgressState { unavailable, improving, stable, declining }
+
 class ProgressViewModel extends ChangeNotifier {
-  ProgressViewModel({
-    FirebaseAuth? firebaseAuth,
-    FirebaseFirestore? firestore,
-  })  : _firebaseAuth = firebaseAuth,
-        _firestore = firestore;
+  ProgressViewModel({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
+    : _firebaseAuth = firebaseAuth,
+      _firestore = firestore;
 
   final FirebaseAuth? _firebaseAuth;
   final FirebaseFirestore? _firestore;
 
   FirebaseAuth get firebaseAuth => _firebaseAuth ?? FirebaseAuth.instance;
 
-  FirebaseFirestore get firestore =>
-      _firestore ?? FirebaseFirestore.instance;
+  FirebaseFirestore get firestore => _firestore ?? FirebaseFirestore.instance;
 
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _userSubscription;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _userSubscription;
 
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _weightRecordsSubscription;
+  _weightRecordsSubscription;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -69,17 +66,14 @@ class ProgressViewModel extends ChangeNotifier {
   double get startingWeightKg => _startingWeightKg;
 
   bool get hasData {
-    return _currentWeightKg > 0 &&
-        _heightCm > 0 &&
-        _error == null;
+    return _currentWeightKg > 0 && _heightCm > 0 && _error == null;
   }
 
   DateTime? _dateOfBirth;
   DateTime? get dateOfBirth => _dateOfBirth;
 
   final List<WeightRecord> _weightRecords = [];
-  List<WeightRecord> get weightRecords =>
-      List.unmodifiable(_weightRecords);
+  List<WeightRecord> get weightRecords => List.unmodifiable(_weightRecords);
 
   /// Load the user profile and begin listening for weight changes.
   Future<void> loadProgressData() async {
@@ -115,36 +109,36 @@ class ProgressViewModel extends ChangeNotifier {
         .doc(userId)
         .snapshots()
         .listen(
-      (snapshot) {
-        final data = snapshot.data();
+          (snapshot) {
+            final data = snapshot.data();
 
-        if (!snapshot.exists || data == null) {
-          _error = 'User profile was not found.';
-          notifyListeners();
-          return;
-        }
+            if (!snapshot.exists || data == null) {
+              _error = 'User profile was not found.';
+              notifyListeners();
+              return;
+            }
 
-        _heightCm = toDouble(data['heightCm']);
-        _currentWeightKg = toDouble(data['weightKg']);
-        _dateOfBirth = toNullableDateTime(data['dateOfBirth']);
-        _goal = data['goal']?.toString().trim() ?? 'Maintenance';
+            _heightCm = toDouble(data['heightCm']);
+            _currentWeightKg = toDouble(data['weightKg']);
+            _dateOfBirth = toNullableDateTime(data['dateOfBirth']);
+            _goal = data['goal']?.toString().trim() ?? 'Maintenance';
 
-        /*
+            /*
          * Before the first weight record is loaded, use the profile's current
          * weight as the starting weight.
          */
-        if (_weightRecords.isEmpty && _startingWeightKg <= 0) {
-          _startingWeightKg = _currentWeightKg;
-        }
+            if (_weightRecords.isEmpty && _startingWeightKg <= 0) {
+              _startingWeightKg = _currentWeightKg;
+            }
 
-        _error = null;
-        notifyListeners();
-      },
-      onError: (Object error) {
-        _error = _friendlyError(error);
-        notifyListeners();
-      },
-    );
+            _error = null;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _error = _friendlyError(error);
+            notifyListeners();
+          },
+        );
   }
 
   void _listenToWeightRecords(String userId) {
@@ -155,23 +149,21 @@ class ProgressViewModel extends ChangeNotifier {
         .orderBy('recordedAt', descending: false)
         .snapshots()
         .listen(
-      (snapshot) {
-        _weightRecords
-          ..clear()
-          ..addAll(
-            snapshot.docs.map(WeightRecord.fromFirestore),
-          );
+          (snapshot) {
+            _weightRecords
+              ..clear()
+              ..addAll(snapshot.docs.map(WeightRecord.fromFirestore));
 
-        _setStartingWeight();
+            _setStartingWeight();
 
-        _error = null;
-        notifyListeners();
-      },
-      onError: (Object error) {
-        _error = _friendlyError(error);
-        notifyListeners();
-      },
-    );
+            _error = null;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _error = _friendlyError(error);
+            notifyListeners();
+          },
+        );
   }
 
   void _setStartingWeight() {
@@ -223,11 +215,11 @@ class ProgressViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userReference =
-          firestore.collection('users').doc(user.uid);
+      final userReference = firestore.collection('users').doc(user.uid);
 
-      final weightRecordReference =
-          userReference.collection('weight_records').doc();
+      final weightRecordReference = userReference
+          .collection('weight_records')
+          .doc();
 
       final now = DateTime.now();
       final recordedDate = _dateOnlyString(now);
@@ -257,8 +249,9 @@ class ProgressViewModel extends ChangeNotifier {
       _currentWeightKg = newWeightKg;
 
       if (_startingWeightKg <= 0) {
-        _startingWeightKg =
-            previousWeightKg > 0 ? previousWeightKg : newWeightKg;
+        _startingWeightKg = previousWeightKg > 0
+            ? previousWeightKg
+            : newWeightKg;
       }
 
       notifyListeners();
@@ -294,8 +287,7 @@ class ProgressViewModel extends ChangeNotifier {
       return 'Weight cannot exceed 400 kg.';
     }
 
-    if (_currentWeightKg > 0 &&
-        (value - _currentWeightKg).abs() > 50) {
+    if (_currentWeightKg > 0 && (value - _currentWeightKg).abs() > 50) {
       return 'The weight change is too large. Check the entered value.';
     }
 
@@ -323,11 +315,9 @@ class ProgressViewModel extends ChangeNotifier {
 
   String get startingBmiText => startingBmi.toStringAsFixed(1);
 
-  String get currentWeightText =>
-      '${_formatWeight(_currentWeightKg)} kg';
+  String get currentWeightText => '${_formatWeight(_currentWeightKg)} kg';
 
-  String get startingWeightText =>
-      '${_formatWeight(_startingWeightKg)} kg';
+  String get startingWeightText => '${_formatWeight(_startingWeightKg)} kg';
 
   String get currentBmiCategory => bmiCategory(currentBmi);
 
@@ -349,8 +339,8 @@ class ProgressViewModel extends ChangeNotifier {
   static String bmiCategory(double bmi) {
     if (bmi <= 0) return 'Unknown';
     if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25) return 'Normal';
-    if (bmi < 30) return 'Overweight';
+    if (bmi < 25.0) return 'Normal';
+    if (bmi < 30.0) return 'Overweight';
     return 'Obese';
   }
 
@@ -358,8 +348,7 @@ class ProgressViewModel extends ChangeNotifier {
   // Progress calculations
   // ---------------------------------------------------------------------------
 
-  double get weightChangeKg =>
-      _currentWeightKg - _startingWeightKg;
+  double get weightChangeKg => _currentWeightKg - _startingWeightKg;
 
   double get weightLostKg {
     final difference = _startingWeightKg - _currentWeightKg;
@@ -403,8 +392,7 @@ class ProgressViewModel extends ChangeNotifier {
 
   bool get isWeightIncreased => weightChangeKg > 0;
 
-  bool get isCurrentBmiNormal =>
-      currentBmi >= 18.5 && currentBmi < 25;
+  bool get isCurrentBmiNormal => currentBmi >= 18.5 && currentBmi < 25;
 
   int get totalRecordedWeights => _weightRecords.length;
 
@@ -425,52 +413,41 @@ class ProgressViewModel extends ChangeNotifier {
     return 'Last $weeks weeks';
   }
 
-  String get progressTitle {
-    if (currentBmi <= 0) {
-      return 'Progress unavailable';
-    }
-
-    if (isCurrentBmiNormal) {
+String get progressTitle {
+  switch (bmiProgressState) {
+    case BmiProgressState.improving:
       return 'Great progress!';
-    }
 
-    if (startingBmi <= 0) {
-      return 'Keep tracking';
-    }
+    case BmiProgressState.stable:
+      return 'You are maintaining your current state';
 
-    final startingDistance = _distanceFromNormalRange(startingBmi);
-    final currentDistance = _distanceFromNormalRange(currentBmi);
+    case BmiProgressState.declining:
+      return 'Your BMI needs attention';
 
-    if (currentDistance < startingDistance) {
-      return 'You are improving!';
-    }
-
-    if (currentDistance > startingDistance) {
-      return 'Review your progress';
-    }
-
-    return 'Keep going!';
+    case BmiProgressState.unavailable:
+      return 'Progress unavailable';
   }
+}
 
-  String get progressMessage {
-    if (currentBmi <= 0) {
-      return 'Add a valid height and weight to calculate your BMI.';
-    }
 
-    if (isCurrentBmiNormal) {
-      return 'Your BMI is within the normal range. Continue following your current plan.';
-    }
+String get progressMessage {
+  switch (bmiProgressState) {
+    case BmiProgressState.improving:
+      return 'Your BMI is moving toward a healthier range. '
+          'Keep following your current plan.';
 
-    if (currentBmi < 18.5) {
-      return 'Your BMI is below the normal range. Focus on gradual and healthy weight gain.';
-    }
+    case BmiProgressState.stable:
+      return 'You are maintaining your current state. '
+          'Keep going and stay focused.';
 
-    if (currentBmi < 30) {
-      return 'Your BMI is above the normal range. Continue tracking meals and physical activity.';
-    }
+    case BmiProgressState.declining:
+      return 'Your BMI is moving away from the healthy range. '
+          'Please follow your plan more consistently.';
 
-    return 'Your BMI is significantly above the normal range. Consider obtaining professional health guidance.';
+    case BmiProgressState.unavailable:
+      return 'Add a valid height and weight to calculate your BMI progress.';
   }
+}
 
   int get consecutiveNormalRecords {
     if (_weightRecords.isEmpty || _heightCm <= 0) {
@@ -480,10 +457,7 @@ class ProgressViewModel extends ChangeNotifier {
     var count = 0;
 
     for (final record in _weightRecords.reversed) {
-      final bmi = calculateBmi(
-        weightKg: record.weightKg,
-        heightCm: _heightCm,
-      );
+      final bmi = calculateBmi(weightKg: record.weightKg, heightCm: _heightCm);
 
       if (bmi >= 18.5 && bmi < 25) {
         count++;
@@ -494,26 +468,39 @@ class ProgressViewModel extends ChangeNotifier {
 
     return count;
   }
+bool get showCongratulations {
+  return startedOutsideNormalRange &&
+      reachedNormalRange &&
+      hasStableNormalBmi;
+}
 
-  bool get showCongratulations =>
-      isCurrentBmiNormal && consecutiveNormalRecords >= 2;
-
-  String get congratulationsMessage {
-    final count = consecutiveNormalRecords;
-
-    if (count <= 1) {
-      return 'Your current BMI is within the normal range.';
-    }
-
-    return "You've maintained a normal BMI for $count consecutive records.";
+String get congratulationsMessage {
+  if (!reachedNormalRange) {
+    return progressMessage;
   }
 
-  static double _distanceFromNormalRange(double bmi) {
+  if (!startedOutsideNormalRange) {
+    return 'Your BMI is currently within the normal range.';
+  }
+
+  if (!hasStableNormalBmi) {
+    return 'You have reached the normal BMI range. '
+        'Maintain it for two consecutive weeks to complete normalization.';
+  }
+
+  return 'Congratulations! You have reached a healthy BMI range '
+      'and maintained it for two consecutive weeks.';
+}
+  static double distanceFromNormalRange(double bmi) {
+    if (bmi <= 0) {
+      return double.infinity;
+    }
+
     if (bmi < 18.5) {
       return 18.5 - bmi;
     }
 
-    if (bmi >= 25) {
+    if (bmi >= 25.0) {
       return bmi - 24.9;
     }
 
@@ -529,9 +516,7 @@ class ProgressViewModel extends ChangeNotifier {
       return List.unmodifiable(_weightRecords);
     }
 
-    return List.unmodifiable(
-      _weightRecords.sublist(_weightRecords.length - 5),
-    );
+    return List.unmodifiable(_weightRecords.sublist(_weightRecords.length - 5));
   }
 
   List<double> get recentWeights {
@@ -546,12 +531,7 @@ class ProgressViewModel extends ChangeNotifier {
 
   List<double> get recentBmis {
     return recentWeights
-        .map(
-          (weight) => calculateBmi(
-            weightKg: weight,
-            heightCm: _heightCm,
-          ),
-        )
+        .map((weight) => calculateBmi(weightKg: weight, heightCm: _heightCm))
         .toList();
   }
 
@@ -587,8 +567,7 @@ class ProgressViewModel extends ChangeNotifier {
   }
 
   static DateTime toDateTime(dynamic value) {
-    return toNullableDateTime(value) ??
-        DateTime.fromMillisecondsSinceEpoch(0);
+    return toNullableDateTime(value) ?? DateTime.fromMillisecondsSinceEpoch(0);
   }
 
   static DateTime? toNullableDateTime(dynamic value) {
@@ -638,34 +617,31 @@ class ProgressViewModel extends ChangeNotifier {
     super.dispose();
   }
 
+  // ---------------------------------------------------------------------------
+  // Change the plan
 
-// ---------------------------------------------------------------------------
-// Change the plan 
+  String _goal = 'Maintenance';
+  String get goal => _goal;
 
+  bool _isUpdatingGoal = false;
+  bool get isUpdatingGoal => _isUpdatingGoal;
 
-String _goal = 'Maintenance';
-String get goal => _goal;
+  bool get isMaintenancePlan {
+    final normalizedGoal = _goal.trim().toLowerCase();
 
-bool _isUpdatingGoal = false;
-bool get isUpdatingGoal => _isUpdatingGoal;
-
-bool get isMaintenancePlan {
-  final normalizedGoal = _goal.trim().toLowerCase();
-
-  return normalizedGoal == 'maintenance' ||
-      normalizedGoal == 'maintain' ||
-      normalizedGoal == 'maintenance plan';
-}
+    return normalizedGoal == 'maintenance' ||
+        normalizedGoal == 'maintain' ||
+        normalizedGoal == 'maintenance plan';
+  }
 
 bool get canChangeToMaintenance {
-  final normalizedGoal = _goal.trim().toLowerCase();
-
-  return normalizedGoal.contains('gain') ||
-      normalizedGoal.contains('loss');
+  return !isMaintenancePlan &&
+      startedOutsideNormalRange &&
+      reachedNormalRange &&
+      hasStableNormalBmi;
 }
 
-
-Future<bool> changeToMaintenancePlan() async {
+ Future<bool> changeToMaintenancePlan() async {
   final user = firebaseAuth.currentUser;
 
   if (user == null) {
@@ -678,6 +654,12 @@ Future<bool> changeToMaintenancePlan() async {
     return true;
   }
 
+  if (!canChangeToMaintenance) {
+    _error = maintenanceStatusText;
+    notifyListeners();
+    return false;
+  }
+
   if (_isUpdatingGoal) {
     return false;
   }
@@ -687,12 +669,29 @@ Future<bool> changeToMaintenancePlan() async {
     _error = null;
     notifyListeners();
 
-    await firestore.collection('users').doc(user.uid).update({
+    final userReference = firestore.collection('users').doc(user.uid);
+
+    final planHistoryReference = userReference
+        .collection('plan_history')
+        .doc();
+
+    final batch = firestore.batch();
+
+    batch.set(planHistoryReference, {
+      'previousGoal': _goal,
+      'newGoal': 'Maintenance',
+      'weightKg': _currentWeightKg,
+      'bmi': currentBmi,
+      'changedAt': FieldValue.serverTimestamp(),
+    });
+
+    batch.update(userReference, {
       'goal': 'Maintenance',
       'updatedAt': FieldValue.serverTimestamp(),
     });
 
-    // Immediate UI update. The profile stream will also receive this change.
+    await batch.commit();
+
     _goal = 'Maintenance';
 
     notifyListeners();
@@ -712,104 +711,225 @@ Future<bool> changeToMaintenancePlan() async {
 }
 
 
+  String get weightStatLabel {
+    if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
+      return 'Weight Change';
+    }
 
+    if (isWeightReduced) {
+      return 'Weight Lost';
+    }
 
+    if (isWeightIncreased) {
+      return 'Weight Gained';
+    }
 
-String get weightStatLabel {
-  if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
     return 'Weight Change';
   }
 
-  if (isWeightReduced) {
-    return 'Weight Lost';
-  }
+  String get weightStatValue {
+    if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
+      return '0.0 kg';
+    }
 
-  if (isWeightIncreased) {
-    return 'Weight Gained';
-  }
+    if (isWeightReduced) {
+      return '${weightLostKg.toStringAsFixed(1)} kg';
+    }
 
-  return 'Weight Change';
-}
+    if (isWeightIncreased) {
+      return '+${weightGainedKg.toStringAsFixed(1)} kg';
+    }
 
-String get weightStatValue {
-  if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
     return '0.0 kg';
   }
 
-  if (isWeightReduced) {
-    return '${weightLostKg.toStringAsFixed(1)} kg';
+  String get weightStatSubtitle {
+    if (_weightRecords.isEmpty) {
+      return 'No previous records';
+    }
+
+    final recordCount = _weightRecords.length;
+
+    if (recordCount == 1) {
+      return 'Based on 1 update';
+    }
+
+    return 'Based on $recordCount updates';
   }
 
-  if (isWeightIncreased) {
-    return '+${weightGainedKg.toStringAsFixed(1)} kg';
+  String get bmiStatSubtitle {
+    if (startingBmi <= 0 || currentBmi <= 0) {
+      return 'BMI data unavailable';
+    }
+
+    if (bmiChange < 0) {
+      if (currentBmi >= 18.5 && currentBmi < 25) {
+        return '↘ Now in normal range';
+      }
+
+      return '↘ BMI decreased';
+    }
+
+    if (bmiChange > 0) {
+      if (currentBmi < 18.5) {
+        return '↗ Moving toward normal';
+      }
+
+      return '↗ BMI increased';
+    }
+
+    return 'No BMI change';
   }
 
-  return '0.0 kg';
-}
+  IconData get weightStatIcon {
+    if (isWeightReduced) {
+      return Icons.trending_down_rounded;
+    }
 
-String get weightStatSubtitle {
-  if (_weightRecords.isEmpty) {
-    return 'No previous records';
+    if (isWeightIncreased) {
+      return Icons.trending_up_rounded;
+    }
+
+    return Icons.remove_rounded;
   }
 
-  final recordCount = _weightRecords.length;
+  IconData get bmiStatIcon {
+    if (bmiChange < 0) {
+      return Icons.trending_down_rounded;
+    }
 
-  if (recordCount == 1) {
-    return 'Based on 1 update';
+    if (bmiChange > 0) {
+      return Icons.trending_up_rounded;
+    }
+
+    return Icons.remove_rounded;
   }
 
-  return 'Based on $recordCount updates';
-}
 
-String get bmiStatSubtitle {
+BmiProgressState get bmiProgressState {
   if (startingBmi <= 0 || currentBmi <= 0) {
-    return 'BMI data unavailable';
+    return BmiProgressState.unavailable;
   }
 
-  if (bmiChange < 0) {
-    if (currentBmi >= 18.5 && currentBmi < 25) {
-      return '↘ Now in normal range';
+  final startingDistance = distanceFromNormalRange(startingBmi);
+  final currentDistance = distanceFromNormalRange(currentBmi);
+
+  final bmiDifference = (currentBmi - startingBmi).abs();
+
+  // Small changes should be treated as stable.
+  const stabilityBuffer = 0.2;
+
+  if (bmiDifference <= stabilityBuffer) {
+    return BmiProgressState.stable;
+  }
+
+  if (currentDistance < startingDistance) {
+    return BmiProgressState.improving;
+  }
+
+  if (currentDistance > startingDistance) {
+    return BmiProgressState.declining;
+  }
+
+  return BmiProgressState.stable;
+}
+
+
+
+int get consecutiveNormalWeeks {
+  if (_heightCm <= 0 || _weightRecords.isEmpty) {
+    return 0;
+  }
+
+  final weeklyLatestRecords = <String, WeightRecord>{};
+
+  for (final record in _weightRecords) {
+    if (record.recordedAt.millisecondsSinceEpoch <= 0) {
+      continue;
     }
 
-    return '↘ BMI decreased';
-  }
+    final weekKey = _weekKey(record.recordedAt);
 
-  if (bmiChange > 0) {
-    if (currentBmi < 18.5) {
-      return '↗ Moving toward normal';
+    final existingRecord = weeklyLatestRecords[weekKey];
+
+    if (existingRecord == null ||
+        record.recordedAt.isAfter(existingRecord.recordedAt)) {
+      weeklyLatestRecords[weekKey] = record;
     }
-
-    return '↗ BMI increased';
   }
 
-  return 'No BMI change';
+  final records = weeklyLatestRecords.values.toList()
+    ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+
+  var count = 0;
+
+  for (final record in records) {
+    final bmi = calculateBmi(
+      weightKg: record.weightKg,
+      heightCm: _heightCm,
+    );
+
+    if (bmi >= 18.5 && bmi < 25.0) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count;
 }
 
-IconData get weightStatIcon {
-  if (isWeightReduced) {
-    return Icons.trending_down_rounded;
-  }
+static String _weekKey(DateTime date) {
+  final normalizedDate = DateTime(date.year, date.month, date.day);
 
-  if (isWeightIncreased) {
-    return Icons.trending_up_rounded;
-  }
+  final monday = normalizedDate.subtract(
+    Duration(days: normalizedDate.weekday - DateTime.monday),
+  );
 
-  return Icons.remove_rounded;
+  final year = monday.year.toString().padLeft(4, '0');
+  final month = monday.month.toString().padLeft(2, '0');
+  final day = monday.day.toString().padLeft(2, '0');
+
+  return '$year-$month-$day';
 }
 
-IconData get bmiStatIcon {
-  if (bmiChange < 0) {
-    return Icons.trending_down_rounded;
-  }
+bool get startedOutsideNormalRange {
+  return startingBmi > 0 &&
+      (startingBmi < 18.5 || startingBmi >= 25.0);
+}
 
-  if (bmiChange > 0) {
-    return Icons.trending_up_rounded;
-  }
+bool get reachedNormalRange {
+  return currentBmi >= 18.5 && currentBmi < 25.0;
+}
 
-  return Icons.remove_rounded;
+bool get hasStableNormalBmi {
+  return consecutiveNormalWeeks >= 2;
 }
 
 
 
+String get maintenanceStatusText {
+  if (isMaintenancePlan) {
+    return 'You are in the Maintenance Plan.';
+  }
+
+  if (!reachedNormalRange) {
+    return 'Reach the normal BMI range to become eligible for Maintenance.';
+  }
+
+  if (!startedOutsideNormalRange) {
+    return 'Your BMI started within the normal range.';
+  }
+
+  if (!hasStableNormalBmi) {
+    final remainingWeeks = 2 - consecutiveNormalWeeks;
+
+    return remainingWeeks == 1
+        ? 'Maintain a normal BMI for 1 more week.'
+        : 'Maintain a normal BMI for 2 consecutive weeks.';
+  }
+
+  return 'You are eligible to change to the Maintenance Plan.';
 }
 
+}
