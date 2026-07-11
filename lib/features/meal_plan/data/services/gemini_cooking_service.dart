@@ -5,9 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../domain/entities/ai_meal_recommendation.dart';
 
 class GeminiCookingService {
-  const GeminiCookingService({
-    required this.apiKey,
-  });
+  const GeminiCookingService({required this.apiKey});
 
   final String apiKey;
 
@@ -28,10 +26,7 @@ class GeminiCookingService {
 
     for (int attempt = 1; attempt <= 5; attempt++) {
       try {
-        return await _callGemini(
-          model: _flashLiteModel,
-          prompt: prompt,
-        );
+        return await _callGemini(model: _flashLiteModel, prompt: prompt);
       } catch (e) {
         lastError = e is Exception ? e : Exception(e.toString());
         await Future.delayed(Duration(milliseconds: 500 * attempt));
@@ -39,10 +34,7 @@ class GeminiCookingService {
     }
 
     try {
-      return await _callGemini(
-        model: _flashModel,
-        prompt: prompt,
-      );
+      return await _callGemini(model: _flashModel, prompt: prompt);
     } catch (e) {
       throw Exception(
         'Gemini cooking guide failed after retries. Last error: ${lastError ?? e}',
@@ -90,16 +82,14 @@ class GeminiCookingService {
 
     final response = await http.post(
       uri,
-      headers: const {
-        'Content-Type': 'application/json',
-      },
+      headers: const {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
             'parts': [
-              {'text': prompt}
+              {'text': prompt},
             ],
-          }
+          },
         ],
         'generationConfig': {
           'temperature': 0.3,
@@ -117,7 +107,7 @@ class GeminiCookingService {
     final candidates = body['candidates'] as List<dynamic>?;
 
     if (candidates == null || candidates.isEmpty) {
-      throw Exception('$model returned no cooking guide');
+      throw Exception('$model returned oking guide');
     }
 
     final firstCandidate = candidates.first as Map<String, dynamic>;

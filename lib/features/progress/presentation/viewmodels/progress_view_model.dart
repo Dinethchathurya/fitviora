@@ -710,7 +710,6 @@ bool get canChangeToMaintenance {
   }
 }
 
-
   String get weightStatLabel {
     if (_startingWeightKg <= 0 || _currentWeightKg <= 0) {
       return 'Weight Change';
