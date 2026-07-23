@@ -1,9 +1,3 @@
-// import '../../domain/entities/food_component.dart';
-
-// abstract class FoodComponentRepository {
-//   Future<List<FoodComponent>> getAllComponents();
-// }
-
 
 import '../../domain/entities/food_component.dart';
 import '../datasources/food_component_dataset.dart';

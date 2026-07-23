@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                         Text(
+                        Text(
                           '${_viewModel.caloriesLeft}',
                           style: TextStyle(
                             fontSize: 50,
@@ -178,28 +178,47 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 10),
                     const SizedBox(height: 10),
-                     _MealDistributionRow(
+                    _MealDistributionRow(
                       label: 'Breakfast',
-                      percentage: '${_viewModel.breakfastPercentage}%',
-                      valueKcal: '${_viewModel.breakfastCalories} kcal',
+
+                      percentage:
+                          '${_viewModel.breakfastCompletionPercentage}%',
+
+                      valueKcal:
+                          '${_viewModel.breakfastCalories} / '
+                          '${_viewModel.breakfastTargetCalories} kcal',
+
                       progressColor: AppColors.orange500,
-                      progress: _viewModel.breakfastPercentage / 100,
+
+                      progress: _viewModel.breakfastProgress,
                     ),
                     const SizedBox(height: 16),
-                     _MealDistributionRow(
+                    _MealDistributionRow(
                       label: 'Lunch',
-                      percentage: '${_viewModel.lunchPercentage}%',
-                      valueKcal: '${_viewModel.lunchCalories} kcal',
+
+                      percentage: '${_viewModel.lunchCompletionPercentage}%',
+
+                      valueKcal:
+                          '${_viewModel.lunchCalories} / '
+                          '${_viewModel.lunchTargetCalories} kcal',
+
                       progressColor: AppColors.emerald500,
-                      progress: _viewModel.lunchPercentage / 100,
+
+                      progress: _viewModel.lunchProgress,
                     ),
                     const SizedBox(height: 16),
-                     _MealDistributionRow(
+                    _MealDistributionRow(
                       label: 'Dinner',
-                      percentage: '${_viewModel.dinnerPercentage}%',
-                      valueKcal: '${_viewModel.dinnerCalories} kcal',
+
+                      percentage: '${_viewModel.dinnerCompletionPercentage}%',
+
+                      valueKcal:
+                          '${_viewModel.dinnerCalories} / '
+                          '${_viewModel.dinnerTargetCalories} kcal',
+
                       progressColor: AppColors.blue500,
-                      progress: _viewModel.dinnerPercentage / 100,
+
+                      progress: _viewModel.dinnerProgress,
                     ),
                   ],
                 ),
@@ -219,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icons.science_outlined,
                     ),
                     const SizedBox(height: 14),
-                     NutrientRow(
+                    NutrientRow(
                       label: 'Protein',
                       value:
                           '${_viewModel.proteinConsumed}g / ${_viewModel.proteinGoal}g',
@@ -227,8 +246,8 @@ class _HomePageState extends State<HomePage> {
                           _viewModel.proteinConsumed / _viewModel.proteinGoal,
                       progressColor: AppColors.blue500,
                     ),
-                     SizedBox(height: 16),
-                     NutrientRow(
+                    SizedBox(height: 16),
+                    NutrientRow(
                       label: 'Carbs',
                       value:
                           '${_viewModel.carbsConsumed}g / ${_viewModel.carbsGoal}g',
@@ -236,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                       progressColor: AppColors.orange500,
                     ),
                     const SizedBox(height: 16),
-                     NutrientRow(
+                    NutrientRow(
                       label: 'Fats',
                       value:
                           '${_viewModel.fatConsumed}g / ${_viewModel.fatGoal}g',
@@ -247,7 +266,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 16),
-
 
               // Seasonal Foods
               Container(
@@ -351,9 +369,7 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFF6D6),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: const Color(0xFFFFE3A3),
-                        ),
+                        border: Border.all(color: const Color(0xFFFFE3A3)),
                       ),
                       child: const Text(
                         '💡 Tip:\nSeasonal foods are fresher, more affordable, and packed with nutrients!',
@@ -370,7 +386,6 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const SizedBox(height: 16),
-
 
               const SizedBox(height: 16),
 
