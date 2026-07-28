@@ -4,6 +4,7 @@ import '../../../../../../core/constants/app_colors.dart';
 
 class BmiSummaryCard extends StatelessWidget {
   final IconData icon;
+  final Color iconColor;
   final String title;
   final String weight;
   final String bmi;
@@ -14,6 +15,7 @@ class BmiSummaryCard extends StatelessWidget {
   const BmiSummaryCard({
     super.key,
     required this.icon,
+    required this.iconColor,
     required this.title,
     required this.weight,
     required this.bmi,
@@ -31,7 +33,7 @@ class BmiSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -46,14 +48,21 @@ class BmiSummaryCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: badgeColor.withOpacity(0.12),
+                  color: iconColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(icon, size: 20, color: badgeTextColor),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: iconColor,
+                ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: badgeColor,
                   borderRadius: BorderRadius.circular(999),
@@ -61,7 +70,7 @@ class BmiSummaryCard extends StatelessWidget {
                 child: Text(
                   badgeText,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: badgeTextColor,
                   ),
@@ -69,16 +78,16 @@ class BmiSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Text(
             title,
             style: const TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
               color: AppColors.gray600,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             weight,
             style: const TextStyle(
@@ -87,10 +96,10 @@ class BmiSummaryCard extends StatelessWidget {
               color: AppColors.gray900,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             'BMI: $bmi',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: AppColors.gray600,
@@ -101,4 +110,3 @@ class BmiSummaryCard extends StatelessWidget {
     );
   }
 }
-
