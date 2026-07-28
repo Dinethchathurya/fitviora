@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitviora/features/home/data/repositories/seasonal_food_repository.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../data/repositories/seasonal_food_repository.dart';
 import '../../domain/entities/seasonal_food.dart';
 
 class HomePageViewModel extends ChangeNotifier {
