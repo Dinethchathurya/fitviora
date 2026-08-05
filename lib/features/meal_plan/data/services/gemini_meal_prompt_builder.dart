@@ -1,4 +1,3 @@
-
 // import 'dart:convert';
 // import 'dart:math';
 // import '../../domain/entities/food_component.dart';
@@ -121,7 +120,6 @@
 //     };
 //   }
 
-    
 //   List<FoodComponent> _pickPromptComponents(List<FoodComponent> components) {
 //     final random = Random();
 
@@ -179,21 +177,9 @@
 //     return selected.values.take(25).toList();
 //   }
 
-
- 
 // }
 
-
-
-
-
-
-
 // ====================
-
-
-
-
 
 // import 'dart:convert';
 // import 'dart:math';
@@ -457,10 +443,6 @@
 //   }
 // }
 
-
-
-
-
 import 'dart:convert';
 import 'dart:math';
 
@@ -653,6 +635,21 @@ class GeminiMealPromptBuilder {
         'Use bestWith relationships where available.',
         'Avoid avoidWith relationships.',
       ],
+      'IMPORTANT_ID_RULES': [
+        'Food ids are permanent database identifiers.',
+        'Food ids NEVER change.',
+        'Food ids NEVER depend on serving size.',
+        'Food ids NEVER depend on servingMultiplier.',
+        'Food ids MUST be copied exactly from availableComponents.',
+        'Do NOT generate a new id.',
+        'Do NOT change grams inside an id.',
+        'Do NOT replace 100g with 250g.',
+        'Do NOT replace 30g with 4pcs.',
+        'Do NOT replace 100g with 2pcs.',
+        'The serving amount belongs ONLY inside portion.',
+        'The servingMultiplier belongs ONLY inside servingMultiplier.',
+        'The id always remains exactly the same.',
+      ],
 
       'userContext': {
         'mealType': mealType,
@@ -754,9 +751,7 @@ class GeminiMealPromptBuilder {
     return jsonEncode(payload);
   }
 
-  Map<String, dynamic> _componentToPromptJson(
-    FoodComponent component,
-  ) {
+  Map<String, dynamic> _componentToPromptJson(FoodComponent component) {
     return {
       'id': component.id,
       'name': component.name,
@@ -782,15 +777,10 @@ class GeminiMealPromptBuilder {
     };
   }
 
-  List<FoodComponent> _pickPromptComponents(
-    List<FoodComponent> components,
-  ) {
+  List<FoodComponent> _pickPromptComponents(List<FoodComponent> components) {
     final random = Random();
 
-    List<FoodComponent> randomTake(
-      Iterable<FoodComponent> items,
-      int count,
-    ) {
+    List<FoodComponent> randomTake(Iterable<FoodComponent> items, int count) {
       final list = items.toList()..shuffle(random);
       return list.take(count).toList(growable: false);
     }
