@@ -31,6 +31,9 @@ class MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    print('baseFoodId build called for $baseFoodId'); // Debugging statement
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(14),

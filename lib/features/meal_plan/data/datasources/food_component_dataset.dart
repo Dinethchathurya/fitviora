@@ -303,8 +303,8 @@ class FoodComponentDataset {
       'llmHints': {
               'tasteProfile': 'mild',
               'texture': 'soft',
-              'bestWith': ['dhal_curry_100g', 'chicken_curry_100g', 'vegetable_curry_with_coconut_oil_100g', 'coconut_sambal_50g'],
-              'avoidWith': ['milk_rice'],
+              'bestWith': [''],
+              'avoidWith': ['lunu_miris_10g'],
             },
     },
     {

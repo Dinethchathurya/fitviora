@@ -11,8 +11,8 @@ class GeminiMealService {
 
   final String apiKey;
 
-  static const String _liteModel = 'gemini-2.5-flash-lite';
-  static const String _fallbackModel = 'gemini-2.5-flash';
+static const String _liteModel = 'gemini-3.1-flash-lite';
+static const String _fallbackModel = 'gemini-3.6-flash';
 
   Future<List<AiMealRecommendation>> generateMeals(String prompt) async {
     if (apiKey.trim().isEmpty) {
