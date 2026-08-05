@@ -842,6 +842,8 @@ class _MealPlanPageState extends State<MealPlanPage> {
                           '${meal.fatG.round()}g',
                       portionSize:
                           meal.portionSize,
+                      baseFoodId: meal.baseFoodId,
+
                       buttonText:
                           hasSelectedMeal
                               ? 'Make This Meal'

@@ -254,6 +254,12 @@ class GeminiMealPromptBuilder {
         'Each meal must include portion sizes for every component.',
         'Use the nutrition values supplied in availableComponents.',
         'Consider goal, BMI, allergies, health conditions, and weather.',
+        'Every meal must return exactly one baseFoodId.',
+        'baseFoodId must be the exact id of the selected component whose role is Base.',
+        'Do not return Protein, Vegetable, Curry, or Side ids inside baseFoodId.',
+        'Do not modify, translate, shorten, or invent the base component id.',
+        'baseFoodId must exactly match an id from availableComponents.',
+        'The baseFoodId is used as a Flutter image filename.',
       ],
 
       'servingRules': [
@@ -310,6 +316,7 @@ class GeminiMealPromptBuilder {
             'proteinG': 0,
             'carbsG': 0,
             'fatG': 0,
+            'baseFoodId': 'exact id of the selected Base component',
             'componentIds': ['string'],
             'components': [
               {
@@ -352,7 +359,7 @@ class GeminiMealPromptBuilder {
     return {
       'id': component.id,
       'name': component.name,
-      'role': component.mealRole,
+      'mealRole': component.mealRole,
       'baseServing': component.servingLabel,
       'baseCalories': component.nutrition.caloriesKcal,
       'baseProteinG': component.nutrition.proteinG,

@@ -13,6 +13,7 @@ class MealCard extends StatelessWidget {
   final String portionSize;
   final VoidCallback? onSelect;
   final String buttonText;
+  final String baseFoodId;
 
   const MealCard({
     super.key,
@@ -24,6 +25,7 @@ class MealCard extends StatelessWidget {
     required this.fat,
     required this.portionSize,
     required this.buttonText,
+    required this.baseFoodId,
     this.onSelect,
   });
 
@@ -53,13 +55,32 @@ class MealCard extends StatelessWidget {
               color: AppColors.emerald50,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Center(
-              child: Text(
-                '🍽️',
-                style: TextStyle(fontSize: 44),
-              ),
-            ),
+            child: baseFoodId.isEmpty
+                ? const Center(
+                    child: Icon(
+                      Icons.restaurant_rounded,
+                      size: 44,
+                      color: AppColors.emerald500,
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset(
+                      'assets/images/Foods/$baseFoodId.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.restaurant_rounded,
+                            size: 44,
+                            color: AppColors.emerald500,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
+
           const SizedBox(height: 12),
           Text(
             title,
@@ -120,15 +141,14 @@ class MealCard extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                portionSize,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.gray900,
+                  portionSize,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.gray900,
+                  ),
                 ),
               ),
-              ),
-              
             ],
           ),
           const SizedBox(height: 12),
@@ -159,4 +179,3 @@ class MealCard extends StatelessWidget {
     );
   }
 }
-

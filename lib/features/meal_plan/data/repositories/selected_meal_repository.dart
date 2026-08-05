@@ -33,7 +33,7 @@ class SelectedMealRepository {
       'carbsG': meal.carbsG,
       'fatG': meal.fatG,
 
-      'componentIds': meal.componentIds,
+      'baseFoodId': meal.baseFoodId,
 
       'selectedDate':
           selectedDate,
@@ -79,6 +79,7 @@ class SelectedMealRepository {
       proteinG: _toDouble(data['proteinG']),
       carbsG: _toDouble(data['carbsG']),
       fatG: _toDouble(data['fatG']),
+      baseFoodId: data['baseFoodId']?.toString() ?? '',
       componentIds: List<String>.from(data['componentIds'] ?? []),
     );
   }

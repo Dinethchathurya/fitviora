@@ -2264,7 +2264,7 @@ class FoodComponentDataset {
     {
       'id': 'oats_80g',
       'name': 'Oats',
-      'mealTypes': ['Breakfast', 'Lunch', 'Dinner'],
+      'mealTypes': ['Breakfast'],
       'mealRole': 'Base',
       'category': 'Rice&Grains',
       'servingLabel': '80g',
@@ -2282,7 +2282,7 @@ class FoodComponentDataset {
       'llmHints': {
               'tasteProfile': 'mild',
               'texture': 'soft',
-              'bestWith': ['dhal_curry_100g', 'chicken_curry_100g', 'vegetable_curry_with_coconut_oil_100g', 'coconut_sambal_50g'],
+              'bestWith': ['skim_milk_200ml', 'greek_yogurt_150g', 'banana_100g'],
               'avoidWith': [],
             },
     },

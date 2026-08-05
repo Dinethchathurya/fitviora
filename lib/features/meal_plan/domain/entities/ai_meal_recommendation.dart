@@ -9,6 +9,7 @@ class AiMealRecommendation {
     required this.carbsG,
     required this.fatG,
     required this.componentIds,
+    required this.baseFoodId  
   });
 
   final String title;
@@ -20,6 +21,7 @@ class AiMealRecommendation {
   final double carbsG;
   final double fatG;
   final List<String> componentIds;
+  final String baseFoodId;
 
   factory AiMealRecommendation.fromJson(Map<String, dynamic> json) {
     return AiMealRecommendation(
@@ -32,6 +34,7 @@ class AiMealRecommendation {
       carbsG: _toDouble(json['carbsG']),
       fatG: _toDouble(json['fatG']),
       componentIds: _stringList(json['componentIds']),
+      baseFoodId: json['baseFoodId']?.toString() ?? '',
     );
   }
 
