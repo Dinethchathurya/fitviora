@@ -3,7 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class DailySummaryCard extends StatelessWidget {
-  const DailySummaryCard({super.key});
+  final String proteinPercent;
+  final String carbsPercent;
+  final String fatsPercent;
+  final String caloriePercent;
+
+  const DailySummaryCard({
+    super.key,
+    required this.proteinPercent,
+    required this.carbsPercent,
+    required this.fatsPercent,
+    required this.caloriePercent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +34,15 @@ class DailySummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(Icons.calendar_today_outlined,
-                  size: 18, color: AppColors.emerald500),
-              const SizedBox(width: 10),
-              const Text(
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 18,
+                color: AppColors.emerald500,
+              ),
+              SizedBox(width: 10),
+              Text(
                 'Daily Summary',
                 style: TextStyle(
                   fontSize: 16,
@@ -38,33 +52,41 @@ class DailySummaryCard extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 14),
+
           _SummaryRow(
             backgroundColor: const Color(0xFFE3F0FF),
             valueColor: AppColors.blue600,
             label: 'Avg. Protein',
-            percent: '85%',
+            percent: proteinPercent,
           ),
+
           const SizedBox(height: 12),
+
           _SummaryRow(
             backgroundColor: const Color(0xFFFFE7CC),
             valueColor: AppColors.orange500,
             label: 'Avg. Carbohydrates',
-            percent: '89%',
+            percent: carbsPercent,
           ),
+
           const SizedBox(height: 12),
+
           _SummaryRow(
             backgroundColor: const Color(0xFFFFE0E8),
             valueColor: AppColors.pink500,
             label: 'Avg. Fats',
-            percent: '80%',
+            percent: fatsPercent,
           ),
+
           const SizedBox(height: 12),
+
           _SummaryRow(
             backgroundColor: const Color(0xFFE9FBEF),
             valueColor: AppColors.emerald600,
             label: 'Avg. Calorie Adherence',
-            percent: '91%',
+            percent: caloriePercent,
           ),
         ],
       ),
@@ -118,4 +140,3 @@ class _SummaryRow extends StatelessWidget {
     );
   }
 }
-

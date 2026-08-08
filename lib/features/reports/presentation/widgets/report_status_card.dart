@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class ReportStatusCard extends StatelessWidget {
-  const ReportStatusCard({super.key});
+  final String title;
+  final String message;
+
+  const ReportStatusCard({
+    super.key,
+    required this.title,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +36,9 @@ class ReportStatusCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.emerald100,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.gray200),
+              border: Border.all(
+                color: AppColors.gray200,
+              ),
             ),
             child: const Icon(
               Icons.check_circle_rounded,
@@ -37,23 +46,27 @@ class ReportStatusCard extends StatelessWidget {
               size: 26,
             ),
           ),
+
           const SizedBox(width: 14),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Excellent Progress! 🎉',
-                  style: TextStyle(
+                  title,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: AppColors.gray900,
                   ),
                 ),
-                SizedBox(height: 6),
+
+                const SizedBox(height: 6),
+
                 Text(
-                  "You're consistently meeting your nutritional goals. Consider adding more protein-rich foods to bridge the remaining gap.",
-                  style: TextStyle(
+                  message,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: AppColors.gray600,
@@ -68,4 +81,3 @@ class ReportStatusCard extends StatelessWidget {
     );
   }
 }
-
