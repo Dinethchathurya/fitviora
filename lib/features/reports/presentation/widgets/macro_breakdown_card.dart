@@ -7,11 +7,18 @@ class MacroBreakdownCard extends StatelessWidget {
   final double carbsProgress;
   final double fatsProgress;
 
+  final String proteinValue;
+  final String carbsValue;
+  final String fatsValue;
+
   const MacroBreakdownCard({
     super.key,
     required this.proteinProgress,
     required this.carbsProgress,
     required this.fatsProgress,
+    required this.proteinValue,
+    required this.carbsValue,
+    required this.fatsValue,
   });
 
   @override
@@ -34,10 +41,10 @@ class MacroBreakdownCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Macronutrient Breakdown',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: AppColors.gray900,
@@ -60,23 +67,28 @@ class MacroBreakdownCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
+
           _MacroRow(
             label: 'Protein',
-            value: '125g / 150g',
+            value: proteinValue,
             progressColor: AppColors.blue500,
             progress: proteinProgress,
           ),
+
           const SizedBox(height: 16),
+
           _MacroRow(
             label: 'Carbs',
-            value: '198g / 225g',
+            value: carbsValue,
             progressColor: AppColors.orange500,
             progress: carbsProgress,
           ),
+
           const SizedBox(height: 16),
+
           _MacroRow(
             label: 'Fats',
-            value: '52g / 67g',
+            value: fatsValue,
             progressColor: AppColors.pink500,
             progress: fatsProgress,
           ),
@@ -134,11 +146,12 @@ class _MacroRow extends StatelessWidget {
             value: safeProgress,
             minHeight: 10,
             backgroundColor: AppColors.gray200,
-            valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              progressColor,
+            ),
           ),
         ),
       ],
     );
   }
 }
-

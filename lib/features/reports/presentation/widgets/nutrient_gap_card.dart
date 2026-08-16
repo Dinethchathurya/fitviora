@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/entities/daily_report.dart';
 
 class NutrientGapCard extends StatelessWidget {
-  const NutrientGapCard({super.key});
+  final List<NutrientGap> gaps;
+
+  const NutrientGapCard({
+    super.key,
+    required this.gaps,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final visibleGaps = gaps.take(2).toList();
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -31,22 +39,43 @@ class NutrientGapCard extends StatelessWidget {
               color: AppColors.gray900,
             ),
           ),
+
           const SizedBox(height: 14),
-          _GapWarningBox(
-            label: 'Protein',
-            subLabel: '— 17% below target',
-            backgroundColor: const Color(0xFFFFF1CC),
-            borderColor: const Color(0xFFFFD66A),
-            textColor: AppColors.gray900,
-          ),
-          const SizedBox(height: 12),
-          _GapWarningBox(
-            label: 'Vitamin D',
-            subLabel: '— 25% below target',
-            backgroundColor: const Color(0xFFFFE6EA),
-            borderColor: const Color(0xFFF8B4C0),
-            textColor: AppColors.gray900,
-          ),
+
+          if (visibleGaps.isEmpty)
+            const _GapWarningBox(
+              label: 'No major gaps',
+              subLabel: '— targets are on track',
+              backgroundColor: Color(0xFFE9FBEF),
+              borderColor: AppColors.emerald500,
+              textColor: AppColors.gray900,
+            )
+          else
+            ...List.generate(
+              visibleGaps.length,
+              (index) {
+                final gap = visibleGaps[index];
+
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom:
+                        index < visibleGaps.length - 1 ? 12 : 0,
+                  ),
+                  child: _GapWarningBox(
+                    label: gap.name,
+                    subLabel:
+                        '— ${gap.gapPercentage.round()}% below target',
+                    backgroundColor: index == 0
+                        ? const Color(0xFFFFF1CC)
+                        : const Color(0xFFFFE6EA),
+                    borderColor: index == 0
+                        ? const Color(0xFFFFD66A)
+                        : const Color(0xFFF8B4C0),
+                    textColor: AppColors.gray900,
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -75,7 +104,9 @@ class _GapWarningBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: borderColor),
+        border: Border.all(
+          color: borderColor,
+        ),
       ),
       child: Row(
         children: [
@@ -107,4 +138,3 @@ class _GapWarningBox extends StatelessWidget {
     );
   }
 }
-

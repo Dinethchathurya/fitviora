@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/entities/daily_report.dart';
 
 class SuggestedFoodsCard extends StatelessWidget {
-  const SuggestedFoodsCard({super.key});
+  final List<SuggestedReportFood> foods;
+
+  const SuggestedFoodsCard({
+    super.key,
+    required this.foods,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final visibleFoods = foods.take(2).toList();
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -26,25 +34,47 @@ class SuggestedFoodsCard extends StatelessWidget {
           const Text(
             'Suggested Foods',
             style: TextStyle(
-fontSize: 16,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
               color: AppColors.gray900,
             ),
           ),
+
           const SizedBox(height: 14),
-          _FoodRow(
-            background: const Color(0xFFDCEBFF),
-            border: const Color(0xFFBFD7FF),
-            title: 'Boiled Eggs',
-            subtitle: 'High in Protein & Vitamin D',
-          ),
-          const SizedBox(height: 12),
-          _FoodRow(
-            background: const Color(0xFFE3F3FF),
-            border: const Color(0xFFCFE9FF),
-            title: 'Salmon',
-            subtitle: 'Rich in Protein & Omega-3',
-          ),
+
+          if (visibleFoods.isEmpty)
+            const Text(
+              'No additional foods are required right now.',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: AppColors.gray600,
+              ),
+            )
+          else
+            ...List.generate(
+              visibleFoods.length,
+              (index) {
+                final food = visibleFoods[index];
+
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom:
+                        index < visibleFoods.length - 1 ? 12 : 0,
+                  ),
+                  child: _FoodRow(
+                    background: index == 0
+                        ? const Color(0xFFDCEBFF)
+                        : const Color(0xFFE3F3FF),
+                    border: index == 0
+                        ? const Color(0xFFBFD7FF)
+                        : const Color(0xFFCFE9FF),
+                    title: food.name,
+                    subtitle: food.reason,
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -71,7 +101,9 @@ class _FoodRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: border),
+        border: Border.all(
+          color: border,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,4 +166,3 @@ class _FoodRow extends StatelessWidget {
     );
   }
 }
-
