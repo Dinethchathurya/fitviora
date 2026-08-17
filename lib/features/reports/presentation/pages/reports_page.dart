@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../viewmodels/reports_view_model.dart';
 import '../widgets/daily_summary_card.dart';
 import '../widgets/macro_breakdown_card.dart';
+import '../widgets/meal_diversity_card.dart';
 import '../widgets/nutrient_gap_card.dart';
 import '../widgets/report_metric_card.dart';
 import '../widgets/report_status_card.dart';
@@ -28,7 +29,6 @@ class _ReportsPageState extends State<ReportsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-
       _viewModel.loadReport();
     });
   }
@@ -147,6 +147,19 @@ class _ReportsPageState extends State<ReportsPage> {
                   proteinValue: _viewModel.proteinText,
                   carbsValue: _viewModel.carbsText,
                   fatsValue: _viewModel.fatText,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Meal Diversity
+                MealDiversityCard(
+                  score: _viewModel.mealDiversityScore,
+                  progress: _viewModel.mealDiversityProgress,
+                  uniqueFoodCount: _viewModel.uniqueFoodCount,
+                  mealsAnalyzed: _viewModel.mealsAnalyzed,
+                  title: _viewModel.diversityTitle,
+                  message: _viewModel.diversityMessage,
+                  repeatedFoods: _viewModel.repeatedFoods,
                 ),
 
                 const SizedBox(height: 16),
